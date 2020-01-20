@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/lay2"
+    android:padding="8dp">
+
+
+
+    <TextView
+        android:id="@+id/NSP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:gravity="center"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:id="@+id/card_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.9"
+        android:gravity="center"
+        android:layout_marginRight="10dp"/>
+
+    <ImageView
+        android:id="@+id/del_user1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete_black_24dp"
+        android:layout_marginRight="10dp"/>
+
+    <ImageView
+        android:id="@+id/im_change_access"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_horiz_black_24dp" />
+</LinearLayout>
