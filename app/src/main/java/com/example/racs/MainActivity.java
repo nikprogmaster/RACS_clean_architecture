@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UsersPOJO> call, Response<UsersPOJO> response) {
                 users = response.body();
-                if (users == null && response.code() == 403){
+                /*if (users == null && response.code() == 403){
                     authorizationActivityStart();
-                }
+                }*/
             }
 
             @Override

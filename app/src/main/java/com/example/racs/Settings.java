@@ -30,7 +30,7 @@ public class Settings extends AppCompatActivity {
     private static final String MAIN_ACTIVITY = "MainActivity";
     private static final String AUTH_ACTIVITY = "AuthActivity";
     private static final String NAME = "activity name";
-    private static final String wanted = "просто НЕЕЕЕЕЕ хочу стрингу";
+
 
     public static void setIp(String ip) {
         Settings.ip = ip;
