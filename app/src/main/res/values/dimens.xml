@@ -5,7 +5,88 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="settings_mainStr">20sp</dimen>
-    <dimen name="delete_width">24dp</dimen>
-    <dimen name="little_margin">8dp</dimen>
+
+    <dimen name="default_dimen">16dp</dimen>
+
+    <dimen name="access_btn_margin_side">16dp</dimen>
+    <dimen name="access_btn_margin_bottom">16dp</dimen>
+    <dimen name="access_delete_width">24dp</dimen>
+    <dimen name="access_layout_padding">4dp</dimen>
+    <dimen name="access_text_managering_margin_start">8dp</dimen>
+    <dimen name="access_title_size">16sp</dimen>
+
+    <dimen name="add_access_title_size">18sp</dimen>
+
+    <dimen name="add_lock_title_size">24sp</dimen>
+    <dimen name="add_lock_description_size">24dp</dimen>
+
+    <dimen name="add_user_title_size">20sp</dimen>
+    <dimen name="add_user_name_margin_top">24dp</dimen>
+    <dimen name="add_user_btn_margin_top">24dp</dimen>
+
+    <dimen name="auth_settings_margin_end">8dp</dimen>
+    <dimen name="auth_top_layout_padding">5dp</dimen>
+    <dimen name="auth_app_name_margin_start">10dp</dimen>
+    <dimen name="auth_app_name_margin_top">3dp</dimen>
+    <dimen name="auth_app_name_text_size">20sp</dimen>
+    <dimen name="auth_full_name_margin_start">10dp</dimen>
+    <dimen name="auth_full_name_margin_top">2dp</dimen>
+    <dimen name="auth_authorization_margin_top">32dp</dimen>
+
+    <dimen name="locks_description_margin_end">10dp</dimen>
+    <dimen name="locks_version_margin_end">10dp</dimen>
+    <dimen name="locks_id_margin_end">10dp</dimen>
+    <dimen name="locks_empty_image_view_width">24dp</dimen>
+    <dimen name="locks_search_width">100dp</dimen>
+    <dimen name="locks_search_height">30dp</dimen>
+    <dimen name="locks_lock_managering_text_size">20sp</dimen>
+    <dimen name="locks_locks_managering_margin_end">8dp</dimen>
+
+    <dimen name="main_layout_padding">5dp</dimen>
+    <dimen name="main_app_name_margin_start">10dp</dimen>
+    <dimen name="main_app_name_margin_top">3dp</dimen>
+    <dimen name="main_app_name_text_size">20sp</dimen>
+    <dimen name="main_full_name_margin_start">10dp</dimen>
+    <dimen name="main_full_name_margin_top">2dp</dimen>
+    <dimen name="main_settings_margin_end">8dp</dimen>
+    <dimen name="main_locks_layout_margin_start">8dp</dimen>
+    <dimen name="main_locks_layout_margin_end">8dp</dimen>
+    <dimen name="main_locks_text_size">20sp</dimen>
+    <dimen name="main_locks_margin_top">8dp</dimen>
+    <dimen name="main_lw_margin_end">4dp</dimen>
+    <dimen name="main_lw_margin_start">4dp</dimen>
+    <dimen name="main_headers_margin_start">4dp</dimen>
+    <dimen name="main_headers_margin_top">12dp</dimen>
+    <dimen name="main_headers_margin_end">4dp</dimen>
+    <dimen name="main_headers_padding">4dp</dimen>
+    <dimen name="main_lock_id_margin_end">10dp</dimen>
+    <dimen name="main_description_margin_end">10dp</dimen>
+
+    <dimen name="settings_version_text_size">20sp</dimen>
+    <dimen name="settings_arrow_margin_start">8dp</dimen>
+    <dimen name="settings_arrow_padding">6dp</dimen>
+    <dimen name="settings_settings_margin">14dp</dimen>
+    <dimen name="settings_text_size">20sp</dimen>
+    <dimen name="settings_ip_text_size">20sp</dimen>
+
+    <dimen name="users_users_headers_padding">4dp</dimen>
+    <dimen name="users_nsp_margin_end">10dp</dimen>
+    <dimen name="users_card_id_margin_end">10dp</dimen>
+    <dimen name="users_empty_image_margin_end">10dp</dimen>
+    <dimen name="users_empty_image_view_padding_start">24dp</dimen>
+    <dimen name="users_dots_width">24dp</dimen>
+    <dimen name="users_managering_users_text_size">20sp</dimen>
+    <dimen name="users_change_access_text_size">16sp</dimen>
+
+    <dimen name="lock_item_layout_padding">8dp</dimen>
+    <dimen name="lock_item_tw_margin_end">10dp</dimen>
+
+    <dimen name="user_item_layout_padding">8dp</dimen>
+    <dimen name="user_item_tw_margin_end">10dp</dimen>
+    <dimen name="user_of_lock_layout_padding">8dp</dimen>
+
+    <dimen name="access_item_layout_padding">4dp</dimen>
+    <dimen name="access_item_snp_margin_end">6dp</dimen>
+    <dimen name="list_item_layout_padding">8dp</dimen>
+    <dimen name="list_item_tw_margin_end">10dp</dimen>
 </resources>

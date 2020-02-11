@@ -3,140 +3,108 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Locks.LocksActivity">
+    android:layout_height="match_parent">
 
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ecf5f3"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onHomeClick"
-            android:src="@drawable/ic_home_black_24dp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onFaceClick"
-            android:src="@drawable/ic_person_black_24dp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_lock_black_24dp" />
-
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView">
+        app:layout_constraintTop_toBottomOf="@+id/search">
 
 
         <TextView
             android:id="@+id/tw_descr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="@dimen/locks_description_margin_end"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/l_id"
+            android:text="@string/main_lock_id"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tw_ver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="@dimen/locks_version_margin_end"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/description"
+            android:text="@string/main_description"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tw_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="@dimen/locks_id_margin_end"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/version"
+            android:text="@string/main_version"
             android:textStyle="bold" />
 
         <ImageView
-            android:layout_width="24dp"
+            android:layout_width="@dimen/locks_empty_image_view_width"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="100dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/search"
+        android:layout_width="@dimen/locks_search_width"
+        android:layout_height="@dimen/locks_search_height"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintStart_toEndOf="@+id/locks_list"
+        app:layout_constraintTop_toBottomOf="@+id/locks_managering_tw" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/locks_managering_tw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/lock_managering"
-        android:textSize="20sp"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/locks_locks_managering_margin_end"
+        android:text="@string/locks_lock_managering"
+        android:textSize="@dimen/locks_lock_managering_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/locks_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/list_of_locks"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:text="@string/locks_list_of_locks"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/locks_managering_tw" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/locks_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
         app:layout_constraintVertical_weight="1"
-        tools:listitem="@layout/lock_list" />
+        tools:listitem="@layout/lock_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>

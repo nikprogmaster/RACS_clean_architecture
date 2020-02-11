@@ -58,5 +58,7 @@ dependencies {
     //Interceptor!!!
     implementation("com.squareup.okhttp3:logging-interceptor:4.3.1")
 
+    //for bottom navigation
+    implementation 'com.google.android.material:material:1.2.0-alpha01'
 
 }

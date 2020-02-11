@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Authorization.AuthorizationActivity">
+    tools:context=".view.activities.AuthorizationActivity">
 
 
     <RelativeLayout
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@color/Dark"
         android:orientation="horizontal"
-        android:padding="5dp"
+        android:padding="@dimen/auth_top_layout_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,11 +24,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginStart="@dimen/auth_app_name_margin_start"
+            android:layout_marginTop="@dimen/auth_app_name_margin_top"
             android:text="@string/app_name"
-            android:textColor="#fafafa"
-            android:textSize="20sp" />
+            android:textColor="@color/auth_app_name_text_color"
+            android:textSize="@dimen/auth_app_name_text_size" />
 
         <TextView
             android:id="@+id/app_name_full"
@@ -37,10 +37,10 @@
             android:layout_below="@+id/app_name"
             android:layout_alignParentStart="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="2dp"
-            android:text="Система контроля удаленного доступа"
-            android:textColor="#fafafa" />
+            android:layout_marginStart="@dimen/auth_full_name_margin_start"
+            android:layout_marginTop="@dimen/auth_full_name_margin_top"
+            android:text="@string/racs"
+            android:textColor="@color/auth_full_name_text_color" />
 
 
         <ImageView
@@ -50,7 +50,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/little_margin"
+            android:layout_marginEnd="@dimen/auth_settings_margin_end"
             android:onClick="onSettingsClick"
             android:src="@drawable/ic_settings_white" />
 
@@ -60,9 +60,9 @@
         android:id="@+id/username_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="@string/email"
@@ -74,9 +74,9 @@
         android:id="@+id/password_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:ems="10"
         android:inputType="textPassword"
         android:hint="@string/password"
@@ -88,11 +88,11 @@
         android:id="@+id/authorization"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/auth_authorization_margin_top"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:gravity="center"
-        android:text="@string/authorization"
+        android:text="@string/auth_authorization"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.534"
@@ -103,10 +103,10 @@
         android:id="@+id/enter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/enter"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
+        android:text="@string/auth_enter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_et" />

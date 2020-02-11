@@ -4,32 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/lay"
-    tools:context=".Users.Users">
+    android:id="@+id/users_layout">
 
     <Button
         android:id="@+id/add_user1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="#ffcc00"
-        android:text="@string/add_user"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
+        android:layout_marginBottom="@dimen/default_dimen"
+        android:background="@color/users_add_user_button_background"
+        android:text="@string/add_user_add_user"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
     <LinearLayout
-        android:id="@+id/linearLayout8"
+        android:id="@+id/users_headers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:orientation="horizontal"
-        android:padding="4dp"
+        android:padding="@dimen/users_users_headers_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/us">
@@ -39,87 +38,57 @@
             android:id="@+id/nsp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="@dimen/users_nsp_margin_end"
             android:layout_weight="0.6"
             android:gravity="center"
-            android:text="ФИО"
+            android:text="@string/users_nsp"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/card_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="@dimen/users_card_id_margin_end"
             android:layout_weight="0.9"
             android:gravity="center"
-            android:text="ID пропуска"
+            android:text="@string/users_pass"
             android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/del_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:paddingStart="24dp" />
+            android:layout_marginEnd="@dimen/users_empty_image_margin_end"
+            android:paddingStart="@dimen/users_empty_image_view_padding_start" />
+
         <ImageView
             android:id="@+id/im_change_access"
-            android:layout_width="24dp"
+            android:layout_width="@dimen/users_dots_width"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ecf5f3"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onHomeClick"
-            android:src="@drawable/ic_home_black_24dp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_person_black_24dp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onLockClick"
-            android:src="@drawable/ic_lock_black_24dp" />
-    </LinearLayout>
 
     <TextView
         android:id="@+id/us"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Пользователи"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
+        android:text="@string/users_users"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/managering_users" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/managering_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Управление пользователями"
-        android:textSize="20sp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
+        android:text="@string/users_managering_users"
+        android:textSize="@dimen/users_managering_users_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -128,28 +97,27 @@
         android:id="@+id/users_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
+        android:layout_marginBottom="@dimen/default_dimen"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/change_assess"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
+        app:layout_constraintTop_toBottomOf="@+id/users_headers"
         app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/users_list" />
+        tools:listitem="@layout/user_item" />
 
     <TextView
         android:id="@+id/change_assess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:onClick="onChangeClick"
-        android:text="@string/change_assess"
-        android:textSize="16sp"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginBottom="@dimen/default_dimen"
+        android:text="@string/users_change_assess"
+        android:textSize="@dimen/users_change_access_text_size"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/add_user1"
         app:layout_constraintEnd_toEndOf="parent"

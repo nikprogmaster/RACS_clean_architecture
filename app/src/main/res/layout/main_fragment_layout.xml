@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activities.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/lin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Dark"
+        android:orientation="horizontal"
+        android:padding="@dimen/main_layout_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/main_app_name_margin_start"
+            android:layout_marginTop="@dimen/main_app_name_margin_top"
+            android:layout_alignParentStart="true"
+            android:text="@string/app_name"
+            android:textColor="@color/main_app_name_text_color"
+            android:textSize="@dimen/main_app_name_text_size" />
+
+        <TextView
+            android:id="@+id/app_name_full"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_name"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/main_full_name_margin_start"
+            android:layout_marginTop="@dimen/main_full_name_margin_top"
+            android:text="@string/racs"
+            android:textColor="#fafafa" />
+
+
+
+        <ImageView
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/main_settings_margin_end"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_settings_white"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/locks_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/main_locks_layout_margin_start"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/main_locks_layout_margin_end"
+        android:background="@color/main_background_color"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="@string/locks"
+            android:textSize="@dimen/main_locks_text_size" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/main_locks_margin_top"
+        android:text="@string/main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lin" />
+
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lw"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/main_lw_margin_start"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/main_lw_margin_end"
+        android:layout_marginBottom="@dimen/default_dimen"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locks_headers"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/list_item" />
+
+    <LinearLayout
+        android:id="@+id/locks_headers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/main_headers_margin_start"
+        android:layout_marginTop="@dimen/main_headers_margin_top"
+        android:layout_marginEnd="@dimen/main_headers_margin_end"
+        android:padding="@dimen/main_headers_padding"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locks_layout">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/main_lock_id"
+            android:layout_marginEnd="@dimen/main_lock_id_margin_end"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/main_description"
+            android:layout_marginEnd="@dimen/main_description_margin_end"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/main_version"
+            android:textStyle="bold"/>
+
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

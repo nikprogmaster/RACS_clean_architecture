@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Settings">
+    tools:context=".view.activities.SettingsActivity">
 
     <LinearLayout
-        android:id="@+id/linearLayout4"
+        android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/Dark"
@@ -19,18 +19,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/settings_arrow_margin_start"
             android:onClick="onBackClick"
-            android:padding="6dp"
+            android:padding="@dimen/settings_arrow_padding"
             android:src="@drawable/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="14dp"
+            android:layout_margin="@dimen/settings_settings_margin"
             android:text="@string/settings"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textColor="@color/settings_text_color"
+            android:textSize="@dimen/settings_text_size" />
     </LinearLayout>
 
 
@@ -39,8 +39,8 @@
         android:id="@+id/version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
         android:text="@string/ver"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/version_str" />
@@ -50,21 +50,21 @@
         android:id="@+id/version_str"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/version"
-        android:textSize="@dimen/settings_mainStr"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:text="@string/main_version"
+        android:textSize="@dimen/settings_version_text_size"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/top_layout" />
 
     <TextView
         android:id="@+id/ip_str"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
         android:text="@string/ip_str"
-        android:textSize="@dimen/settings_mainStr"
+        android:textSize="@dimen/settings_ip_text_size"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/version" />
 
@@ -72,9 +72,9 @@
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/default_dimen"
+        android:layout_marginTop="@dimen/default_dimen"
+        android:layout_marginEnd="@dimen/default_dimen"
         android:entries="@array/IPs"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

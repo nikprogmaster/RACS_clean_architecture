@@ -5,4 +5,13 @@
     <color name="colorAccent">#D81B60</color>
     <color name="Transparent">#00000000</color>
     <color name="Dark">#3b3f42</color>
+    <color name="auth_app_name_text_color">#fafafa</color>
+    <color name="auth_full_name_text_color">#fafafa</color>
+    <color name="locks_layout_background">#ecf5f3</color>
+    <color name="main_app_name_text_color">#fafafa</color>
+    <color name="main_background_color">#faf5f5</color>
+    <color name="main_bottom_background_color">#95979E</color>
+    <color name="settings_text_color">#FFFFFF</color>
+    <color name="users_add_user_button_background">#ffcc00</color>
+    <color name="users_bottom_background">#ecf5f3</color>
 </resources>
