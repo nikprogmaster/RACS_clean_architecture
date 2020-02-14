@@ -1,4 +1,4 @@
-package com.example.racs.view.adapters;
+package com.example.racs.presentation.view.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,14 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
 import com.example.racs.data.entities.AccessEntity;
 import com.example.racs.data.entities.LocksEntity;
 import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.view.activities.AccessActivity;
+import com.example.racs.presentation.view.activities.AccessActivity;
 
 import java.util.ArrayList;
 import java.util.List;

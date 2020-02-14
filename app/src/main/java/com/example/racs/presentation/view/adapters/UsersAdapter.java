@@ -1,4 +1,4 @@
-package com.example.racs.view.adapters;
+package com.example.racs.presentation.view.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
 import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.view.fragments.UsersFragment;
+import com.example.racs.presentation.view.fragments.UsersFragment;
 
 import java.util.ArrayList;
 import java.util.List;

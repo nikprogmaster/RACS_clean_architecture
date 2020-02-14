@@ -1,28 +1,34 @@
-package com.example.racs.view.activities;
+package com.example.racs.presentation.view.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.racs.R;
-import com.example.racs.view.fragments.LocksFragment;
-import com.example.racs.view.fragments.MainFragment;
-import com.example.racs.view.fragments.UsersFragment;
+import com.example.racs.data.api.App;
+import com.example.racs.presentation.view.fragments.LocksFragment;
+import com.example.racs.presentation.view.fragments.MainFragment;
+import com.example.racs.presentation.view.fragments.UsersFragment;
+import com.example.racs.presentation.viewmodel.AuthViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.host_activity, MainFragment.newInstance())
+                .addToBackStack(null)
                 .commit();
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -50,6 +56,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
 }

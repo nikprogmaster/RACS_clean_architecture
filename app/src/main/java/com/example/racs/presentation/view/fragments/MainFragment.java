@@ -1,7 +1,6 @@
-package com.example.racs.view.fragments;
+package com.example.racs.presentation.view.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,39 +10,30 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
 import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.data.repository.LocksRepository;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.getusecases.GetLocks;
-import com.example.racs.view.activities.AuthorizationActivity;
-import com.example.racs.view.activities.LockActivity;
-import com.example.racs.view.activities.SettingsActivity;
-import com.example.racs.view.adapters.LocksAdapter;
+import com.example.racs.presentation.view.activities.AuthorizationActivity;
+import com.example.racs.presentation.view.activities.LockActivity;
+import com.example.racs.presentation.view.activities.SettingsActivity;
+import com.example.racs.presentation.view.adapters.LocksAdapter;
+import com.example.racs.presentation.viewmodel.LocksViewModel;
 
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class MainFragment extends Fragment {
-
 
     private static RecyclerView locks_recycler;
     private static LocksAdapter locks_adapter;
-    private static List<LocksEntity.Lock> locks;
-    private static final int DEFAULT_NUMBER = 50;
-    private static SharedPreferences settings;
-    private static final String ACCESS_TOKEN = "ACCESS";
-    private static final String APP_PREFERENCES = "mysettings";
+    private static List<LocksEntity.Lock> locksList;
     private static final String ACTIVITY_NAME = "MainActivity";
     private static final String NAME = "activity name";
     private ImageView settingsButton;
-    private static final LocksRepository locksRepository = new LocksRepository();
-    private GetLocks usecaseGetLocks;
-
 
 
     public static MainFragment newInstance() {
@@ -59,7 +49,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.main_fragment_layout, container, false);
         locks_recycler = root.findViewById(R.id.lw);
-        settingsButton = root.findViewById(R.id.settings);
+        settingsButton = root.findViewById(R.id.settings_main);
         return root;
     }
 
@@ -70,8 +60,6 @@ public class MainFragment extends Fragment {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), RecyclerView.VERTICAL);
         locks_recycler.addItemDecoration(itemDecoration);
 
-        //Получаем настройки
-        settings = requireContext().getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         LocksAdapter.OnLockClickListener onLockClickListener = new LocksAdapter.OnLockClickListener() {
             @Override
@@ -93,23 +81,22 @@ public class MainFragment extends Fragment {
         });
 
         //Получаем список замков от сервера
-        getLocks(DEFAULT_NUMBER);
+        getLocks();
     }
 
 
-    public void getLocks(int count) {
-        usecaseGetLocks = new GetLocks(locksRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<LocksEntity.Lock>>() {
+    public void getLocks() {
+        LocksViewModel locksViewModel = ViewModelProviders.of(this).get(LocksViewModel.class);
+        LiveData<List<LocksEntity.Lock>> listLiveData = locksViewModel.getData();
+        listLiveData.observe(this, new Observer<List<LocksEntity.Lock>>() {
             @Override
-            public void onComplete(List<LocksEntity.Lock> smt) {
-                locks = smt;
+            public void onChanged(List<LocksEntity.Lock> locks) {
+                locksList = locks;
                 locks_recycler.setAdapter(locks_adapter);
                 locks_adapter.replaceLocks(locks);
             }
         });
-        usecaseGetLocks.getLocks();
     }
-
-
 
 
     private void authorizationActivityStart (){
@@ -117,6 +104,4 @@ public class MainFragment extends Fragment {
         startActivity(intent);
         getActivity().finish();
     }
-
-
 }

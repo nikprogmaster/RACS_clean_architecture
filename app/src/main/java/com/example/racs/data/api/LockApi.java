@@ -17,7 +17,7 @@ import retrofit2.http.Url;
 public interface LockApi {
 
     //запрос на получение списка замков
-    @GET("locks")
+    @GET("locks/")
     Call<LocksEntity> getLocks(@Header("Authorization") String token, @Query("count") int count);
 
     //запрос на получение даты запуска сервере
@@ -28,6 +28,6 @@ public interface LockApi {
     @POST("locks/")
     Call<LocksEntity> addLock(@Header("Authorization") String token, @Body LockPostEntity body);
 
-    @DELETE("locks/{id}/")
+    @DELETE("locksList/{id}/")
     Call<Void> deleteLock(@Header("Authorization") String token, @Path("id") int id);
 }

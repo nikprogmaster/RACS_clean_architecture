@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".data.api.RetrofitObject"
+        android:name=".data.api.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         tools:ignore="GoogleAppIndexingWarning"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        <activity android:name=".view.activities.AuthorizationActivity">
+        <activity android:name=".presentation.view.activities.AuthorizationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,12 +25,12 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".view.activities.LockActivity" />
-        <activity android:name=".view.activities.AddAccessActivity" />
-        <activity android:name=".view.activities.AccessActivity" />
-        <activity android:name=".view.activities.AddUserActivity" />
-        <activity android:name=".view.activities.SettingsActivity" />
-        <activity android:name=".view.activities.MainActivity">
+        <activity android:name=".presentation.view.activities.LockActivity" />
+        <activity android:name=".presentation.view.activities.AddAccessActivity" />
+        <activity android:name=".presentation.view.activities.AccessActivity" />
+        <activity android:name=".presentation.view.activities.AddUserActivity" />
+        <activity android:name=".presentation.view.activities.SettingsActivity" />
+        <activity android:name=".presentation.view.activities.MainActivity">
         </activity>
 
     </application>

@@ -1,4 +1,4 @@
-package com.example.racs.view.adapters;
+package com.example.racs.presentation.view.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
 import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.view.fragments.LocksFragment;
+import com.example.racs.presentation.view.fragments.LocksFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,26 +20,19 @@ import java.util.List;
 public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> {
 
     private final List<LocksEntity.Lock> locks_list = new ArrayList<>();
-
-    private boolean withoutImage;
-
+    private boolean withoutDeleting;
     private OnLockClickListener onLockClickListener;
+    private OnDeleteClickListener onDeleteClickListener;
 
-    public boolean isWithoutImage() {
-        return withoutImage;
-    }
-
-    public void setWithoutImage(boolean withoutImage) {
-        this.withoutImage = withoutImage;
-    }
-
-    public LocksAdapter(OnLockClickListener onLockClickListener, boolean withoutImage) {
-        this.withoutImage = withoutImage;
+    public LocksAdapter(OnLockClickListener onLockClickListener, boolean withoutDeleting) {
+        this.withoutDeleting = withoutDeleting;
         this.onLockClickListener = onLockClickListener;
     }
 
-    public interface OnLockClickListener {
-        void onLockClick(LocksEntity.Lock lock);
+    public LocksAdapter(OnLockClickListener onLockClickListener, OnDeleteClickListener onDeleteClickListener, boolean withoutDeleting){
+        this.withoutDeleting = withoutDeleting;
+        this.onLockClickListener = onLockClickListener;
+        this.onDeleteClickListener = onDeleteClickListener;
     }
 
     @NonNull
@@ -48,7 +41,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view;
-        if (withoutImage) {
+        if (withoutDeleting) {
             view = layoutInflater.inflate(R.layout.list_item, parent, false);
         } else {
             view = layoutInflater.inflate(R.layout.lock_item, parent, false);
@@ -59,21 +52,11 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LocksEntity.Lock lock = locks_list.get(position);
-        if (locks_list.size() >= 50 && locks_list.size() % 50 == 0 && position == locks_list.size() - 20) {
-            LocksFragment.getLocks(locks_list.size() + 50);
-        }
-        if (withoutImage) {
-            holder.bindViews();
+        if (withoutDeleting) {
+            holder.bindViews(lock);
         } else {
-            holder.bindAllViews();
+            holder.bindAllViews(lock);
         }
-        holder.id.setText(String.valueOf(lock.getLId()));
-        holder.description.setText(lock.getDescription().substring(0, 3));
-        holder.version.setText(lock.getVersion());
-        if (!withoutImage) {
-            holder.del_image.setImageResource(R.drawable.ic_delete_black_24dp);
-        }
-
     }
 
 
@@ -90,10 +73,10 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView id;
-        TextView description;
-        TextView version;
-        ImageView del_image;
+        private TextView id;
+        private TextView description;
+        private TextView version;
+        private ImageView del_image;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,21 +87,42 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
                     onLockClickListener.onLockClick(lock);
                 }
             });
+
         }
 
-        public void bindAllViews() {
+        public void bindAllViews(final LocksEntity.Lock lock) {
             id = itemView.findViewById(R.id.tw_id);
             description = itemView.findViewById(R.id.tw_descr);
             version = itemView.findViewById(R.id.tw_ver);
             del_image = itemView.findViewById(R.id.delete_iv);
+            id.setText(String.valueOf(lock.getLId()));
+            description.setText(lock.getDescription().substring(0, 3));
+            version.setText(lock.getVersion());
+            del_image.setImageResource(R.drawable.ic_delete_black_24dp);
+            del_image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeleteClickListener.onDelete(lock.getLId());
+                }
+            });
         }
 
-        public void bindViews() {
+        public void bindViews(LocksEntity.Lock lock) {
             id = itemView.findViewById(R.id.t2);
             description = itemView.findViewById(R.id.t3);
             version = itemView.findViewById(R.id.t4);
+            id.setText(String.valueOf(lock.getLId()));
+            description.setText(lock.getDescription().substring(0, 3));
+            version.setText(lock.getVersion());
         }
     }
 
+    public interface OnLockClickListener {
+        void onLockClick(LocksEntity.Lock lock);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDelete(int id);
+    }
 
 }

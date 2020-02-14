@@ -1,4 +1,4 @@
-package com.example.racs.view.adapters;
+package com.example.racs.presentation.view.adapters;
 
 import android.view.View;
 import android.widget.ImageView;

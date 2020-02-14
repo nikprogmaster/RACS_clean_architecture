@@ -1,4 +1,4 @@
-package com.example.racs.view.activities;
+package com.example.racs.presentation.view.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +19,7 @@ import com.example.racs.domain.usecases.OnCompleteListener;
 import com.example.racs.domain.usecases.getusecases.GetAccesses;
 import com.example.racs.domain.usecases.getusecases.GetAccessesToLock;
 import com.example.racs.domain.usecases.getusecases.GetUsers;
-import com.example.racs.view.adapters.UsersofLockAdapter;
+import com.example.racs.presentation.view.adapters.UsersofLockAdapter;
 
 import java.util.List;
 

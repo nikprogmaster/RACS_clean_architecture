@@ -1,4 +1,4 @@
-package com.example.racs.view.activities;
+package com.example.racs.presentation.view.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +24,7 @@ import com.example.racs.domain.usecases.deleteusecases.DeleteAccess;
 import com.example.racs.domain.usecases.getusecases.GetAccesses;
 import com.example.racs.domain.usecases.getusecases.GetLocks;
 import com.example.racs.domain.usecases.getusecases.GetUsers;
-import com.example.racs.view.adapters.AccessAdapter;
+import com.example.racs.presentation.view.adapters.AccessAdapter;
 
 import java.util.List;
 
@@ -67,9 +67,15 @@ public class AccessActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access);
-        add_btn = findViewById(R.id.button2);
-        back = findViewById(R.id.back);
 
+        initViews();
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         settings = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
@@ -83,9 +89,7 @@ public class AccessActivity extends AppCompatActivity {
 
         getUsers(DEFAULT_NUMBER);
         getLocks(DEFAULT_NUMBER);
-        accessRecycler = findViewById(R.id.access_list);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, RecyclerView.VERTICAL);
-        accessRecycler.addItemDecoration(itemDecoration);
+
 
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,15 +146,11 @@ public class AccessActivity extends AppCompatActivity {
         usecaseGetLocks.getLocks();
     }
 
-    private void initForAdapter() {
-
-
+    private void initViews(){
+        add_btn = findViewById(R.id.button2);
+        back = findViewById(R.id.back);
+        accessRecycler = findViewById(R.id.access_list);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, RecyclerView.VERTICAL);
+        accessRecycler.addItemDecoration(itemDecoration);
     }
-
-
-    public void onBackClick2(View view) {
-        finish();
-    }
-
-
 }

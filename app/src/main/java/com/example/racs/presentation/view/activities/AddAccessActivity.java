@@ -1,4 +1,4 @@
-package com.example.racs.view.activities;
+package com.example.racs.presentation.view.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;

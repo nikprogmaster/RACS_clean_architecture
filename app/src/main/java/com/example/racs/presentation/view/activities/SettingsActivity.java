@@ -1,4 +1,4 @@
-package com.example.racs.view.activities;
+package com.example.racs.presentation.view.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.racs.R;
-import com.example.racs.data.api.RetrofitObject;
+import com.example.racs.data.api.App;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -63,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity {
                         .baseUrl("http://" + SettingsActivity.ip + ":8000/api/v1/")
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-                RetrofitObject.setRetrofit(retrofit);
+                App.setRetrofit(retrofit);
             }
 
             @Override

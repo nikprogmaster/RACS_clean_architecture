@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activities.AuthorizationActivity">
+    tools:context=".presentation.view.activities.AuthorizationActivity">
 
 
     <RelativeLayout
@@ -44,14 +44,13 @@
 
 
         <ImageView
-            android:id="@+id/settings"
+            android:id="@+id/settings_auth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/auth_settings_margin_end"
-            android:onClick="onSettingsClick"
             android:src="@drawable/ic_settings_white" />
 
     </RelativeLayout>

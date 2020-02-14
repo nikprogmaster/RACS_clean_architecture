@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activities.AccessActivity">
+    tools:context=".presentation.view.activities.AccessActivity">
 
     <Button
         android:id="@+id/button2"
@@ -25,7 +25,6 @@
         android:layout_marginStart="@dimen/access_btn_margin_side"
         android:layout_marginTop="@dimen/default_dimen"
         android:src="@drawable/ic_back_black"
-        android:onClick="onBackClick2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

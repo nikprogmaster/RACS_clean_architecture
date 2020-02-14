@@ -1,4 +1,4 @@
-package com.example.racs.view.adapters;
+package com.example.racs.presentation.view.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
