@@ -9,13 +9,14 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.racs.R;
 import com.example.racs.data.api.App;
+import com.example.racs.presentation.view.fragments.AccessFragment;
 import com.example.racs.presentation.view.fragments.LocksFragment;
 import com.example.racs.presentation.view.fragments.MainFragment;
 import com.example.racs.presentation.view.fragments.UsersFragment;
 import com.example.racs.presentation.viewmodel.AuthViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnAccessListClickListener, OnBackClickListener {
 
     private BottomNavigationView bottomNavigationView;
 
@@ -57,4 +58,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onAccessClick() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.host_activity, AccessFragment.newInstance())
+                .commit();
+    }
+
+    @Override
+    public void onBackClick() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.host_activity, UsersFragment.newInstance())
+                .commit();
+    }
 }

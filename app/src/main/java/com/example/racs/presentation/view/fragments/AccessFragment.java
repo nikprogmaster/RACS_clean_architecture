@@ -1,7 +1,6 @@
 package com.example.racs.presentation.view.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,60 +11,44 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.AccessEntity;
 import com.example.racs.data.entities.LocksEntity;
 import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.data.repository.AccessesRepository;
-import com.example.racs.data.repository.LocksRepository;
-import com.example.racs.data.repository.UsersRepository;
 import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.deleteusecases.DeleteAccess;
-import com.example.racs.domain.usecases.getusecases.GetAccesses;
-import com.example.racs.domain.usecases.getusecases.GetLocks;
-import com.example.racs.domain.usecases.getusecases.GetUsers;
 import com.example.racs.presentation.view.activities.AddAccessActivity;
+import com.example.racs.presentation.view.activities.OnBackClickListener;
 import com.example.racs.presentation.view.adapters.AccessAdapter;
+import com.example.racs.presentation.viewmodel.AccessViewModel;
+import com.example.racs.presentation.viewmodel.LocksViewModel;
+import com.example.racs.presentation.viewmodel.UsersViewModel;
 
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class AccessFragment extends Fragment {
 
-    private static final int DEFAULT_NUMBER = 50;
+    private static final int DEFAULT_NUMBER = 100;
     private static RecyclerView accessRecycler;
     private static AccessAdapter accessAdapter;
     private static List<AccessEntity.AccPOJO> accesses;
     private static boolean isAdded = false;
     private Button add_btn;
     private ImageView back;
-    private static SharedPreferences settings;
-    private static final String ACCESS_TOKEN = "ACCESS";
-    private static final String APP_PREFERENCES = "mysettings";
-    private static final AccessesRepository accessesRepository = new AccessesRepository();
-    private static GetAccesses usecaseGetAccesses;
-    private static DeleteAccess usecaseDeleteAccess;
-    private static List<LocksEntity.Lock> locks;
-    private static List<UsersEntity.User> users;
-    private static final LocksRepository locksRepository = new LocksRepository();
-    private static final UsersRepository usersRepository = new UsersRepository();
-    private GetLocks usecaseGetLocks;
-    private GetUsers usecaseGetUsers;
+    private OnBackClickListener onBackClickListener;
+    private static List<LocksEntity.Lock> lockList;
+    private static List<UsersEntity.User> usersList;
     private OnCompleteListener<Boolean> onCompleteListener;
     private AccessAdapter.OnDeleteListener onDeleteListener = new AccessAdapter.OnDeleteListener() {
         @Override
         public void onDelete(int position) {
-            usecaseDeleteAccess = new DeleteAccess(accessesRepository, settings.getString(ACCESS_TOKEN, ""), position, new OnCompleteListener<Boolean>() {
-                @Override
-                public void onComplete(Boolean smt) {
-                    getAccesses(DEFAULT_NUMBER);
-                }
-            });
-            usecaseDeleteAccess.deleteUser();
+            AccessViewModel accessViewModel = App.getAccessViewModel();
+            accessViewModel.deleteAccess(position);
         }
     };
 
@@ -94,25 +77,34 @@ public class AccessFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        onBackClickListener = (OnBackClickListener) getActivity();
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireFragmentManager().popBackStack();
+                onBackClickListener.onBackClick();
             }
         });
-
-        settings = getActivity().getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         onCompleteListener = new OnCompleteListener<Boolean>() {
             @Override
             public void onComplete(Boolean smt) {
-                accessAdapter = new AccessAdapter(locks, users, onDeleteListener);
-                getAccesses(DEFAULT_NUMBER);
+                accessAdapter = new AccessAdapter(lockList, usersList, onDeleteListener);
+                accessRecycler.setAdapter(accessAdapter);
+                accessAdapter.replaceAccesses(accesses);
             }
         };
 
-        getUsers(DEFAULT_NUMBER);
-        getLocks(DEFAULT_NUMBER);
+        observeLocks();
+        observeUsers();
+        observeAccesses();
+        accessAdapter = new AccessAdapter(lockList, usersList, onDeleteListener);
+        accessRecycler.setAdapter(accessAdapter);
+        accessAdapter.replaceAccesses(accesses);
+
+        updateLocks();
+        updateUsers();
+        updateAccesses();
+
 
 
         add_btn.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +116,7 @@ public class AccessFragment extends Fragment {
         });
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -131,43 +124,60 @@ public class AccessFragment extends Fragment {
             return;
         }
         isAdded = data.getBooleanExtra(AddAccessActivity.ADDED, isAdded);
-        getAccesses(isAdded ? accesses.size() + 1 : accesses.size());
+        observeAccesses();
 
     }
 
-    public static void getAccesses(int count) {
-        usecaseGetAccesses = new GetAccesses(accessesRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<AccessEntity.AccPOJO>>() {
+    private void observeAccesses() {
+        AccessViewModel accessViewModel = App.getAccessViewModel();
+        LiveData<List<AccessEntity.AccPOJO>> data = accessViewModel.getData();
+        accesses = data.getValue();
+        data.observe(this, new Observer<List<AccessEntity.AccPOJO>>() {
             @Override
-            public void onComplete(List<AccessEntity.AccPOJO> smt) {
-                accesses = smt;
-                accessRecycler.setAdapter(accessAdapter);
-                accessAdapter.replaceAccesses(accesses);
+            public void onChanged(List<AccessEntity.AccPOJO> accPOJOS) {
+                accesses = accPOJOS;
             }
         });
-        usecaseGetAccesses.getAccesses();
-
     }
 
-    public void getUsers(int count) {
-        usecaseGetUsers = new GetUsers(usersRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<UsersEntity.User>>() {
+    private void observeUsers(){
+        UsersViewModel usersViewModel = App.getUsersViewModel();
+        LiveData<List<UsersEntity.User>> usersData = usersViewModel.getData(DEFAULT_NUMBER);
+        usersList = usersData.getValue();
+        usersData.observe(this, new Observer<List<UsersEntity.User>>() {
             @Override
-            public void onComplete(List<UsersEntity.User> smt) {
-                users = smt;
-
+            public void onChanged(List<UsersEntity.User> users) {
+                usersList = users;
             }
         });
-        usecaseGetUsers.getUsers();
     }
 
-    public void getLocks(int count) {
-        usecaseGetLocks = new GetLocks(locksRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<LocksEntity.Lock>>() {
+    private void observeLocks(){
+        LocksViewModel locksViewModel = App.getLocksViewModel();
+        LiveData<List<LocksEntity.Lock>> locksData = locksViewModel.getData();
+        lockList = locksData.getValue();
+        locksData.observe(this, new Observer<List<LocksEntity.Lock>>() {
             @Override
-            public void onComplete(List<LocksEntity.Lock> smt) {
-                locks = smt;
-                onCompleteListener.onComplete(true);
+            public void onChanged(List<LocksEntity.Lock> locks) {
+                lockList = locks;
             }
         });
-        usecaseGetLocks.getLocks();
+    }
+
+    private void updateAccesses(){
+        AccessViewModel accessViewModel = App.getAccessViewModel();
+        accessViewModel.loadData();
+        onCompleteListener.onComplete(true);
+    }
+
+    private void updateUsers() {
+        UsersViewModel usersViewModel = App.getUsersViewModel();
+        usersViewModel.loadData(DEFAULT_NUMBER);
+    }
+
+    private void updateLocks() {
+        LocksViewModel locksViewModel = App.getLocksViewModel();
+        locksViewModel.loadData();
     }
 
 }

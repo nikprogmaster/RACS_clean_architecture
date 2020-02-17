@@ -7,28 +7,25 @@ import com.example.racs.data.repository.IUsersReposytory;
 import com.example.racs.domain.usecases.OnCompleteListener;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class GetUsers {
 
     private IUsersReposytory repository;
-    private String token;
     private OnCompleteListener<List<UsersEntity.User>> onCompleteListener;
 
-    public GetUsers(IUsersReposytory repository, String token, int count, OnCompleteListener<List<UsersEntity.User>> onCompleteListener) {
+    public GetUsers(IUsersReposytory repository, OnCompleteListener<List<UsersEntity.User>> onCompleteListener) {
         this.repository = repository;
-        this.token = token;
-        this.count = count;
         this.onCompleteListener = onCompleteListener;
     }
 
-    private int count;
 
-    public void getUsers() {
-        GetUsersAsyncTask asyncTask = new GetUsersAsyncTask(repository, token, count, onCompleteListener);
-        asyncTask.execute();
+    public void getUsers(String token, int count) {
+        repository.getUsers(token, count, onCompleteListener);
     }
 
-    static class GetUsersAsyncTask extends AsyncTask<Void, Void, List<UsersEntity.User>> {
+
+   /* static class GetUsersAsyncTask extends AsyncTask<Void, Void, List<UsersEntity.User>> {
 
         private final IUsersReposytory repository;
         private final String token;
@@ -52,6 +49,6 @@ public class GetUsers {
             onCompleteListener.onComplete(users);
             super.onPostExecute(users);
         }
-    }
+    }*/
 
 }

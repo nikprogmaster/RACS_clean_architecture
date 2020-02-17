@@ -14,10 +14,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.AccessPostEntity;
 import com.example.racs.data.repository.AccessesRepository;
 import com.example.racs.domain.usecases.OnCompleteListener;
 import com.example.racs.domain.usecases.addusecases.AddAccess;
+import com.example.racs.presentation.viewmodel.AccessViewModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,11 +30,6 @@ public class AddAccessActivity extends AppCompatActivity {
     private EditText l_id, u_id, datestart, timestart, datefinish, timefinish;
     private Button add_btn;
     private ImageView date_finish, date_start;
-    private static SharedPreferences settings;
-    private static final String ACCESS_TOKEN = "ACCESS";
-    private static final String APP_PREFERENCES = "mysettings";
-    private static final AccessesRepository accessesRepository = new AccessesRepository();
-    private static AddAccess usecaseAddAccess;
 
     public static final String ADDED = "ADDED_NEW_VALUE";
     private String start = "2000-01-01T01:01:00Z";
@@ -44,9 +41,6 @@ public class AddAccessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_access);
         initViews();
-        final String TAG = "Привет, Андрей";
-
-        settings = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,17 +69,9 @@ public class AddAccessActivity extends AppCompatActivity {
                 accessPostEntity.setAccessStart(start);
                 accessPostEntity.setAccessStop(finish);
 
-                usecaseAddAccess = new AddAccess(accessesRepository, accessPostEntity, settings.getString(ACCESS_TOKEN, ""), new OnCompleteListener<Boolean>() {
-                    @Override
-                    public void onComplete(Boolean smt) {
-                        boolean added = smt;
-                        Intent intent = new Intent();
-                        intent.putExtra(ADDED, added);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                });
-                usecaseAddAccess.addUser();
+                AccessViewModel accessViewModel = App.getAccessViewModel();
+                accessViewModel.addAccess(accessPostEntity, AddAccessActivity.this);
+
 
             }
         });

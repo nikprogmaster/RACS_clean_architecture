@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.AuthEntity;
 import com.example.racs.data.entities.AuthPostEntity;
 import com.example.racs.presentation.viewmodel.AuthViewModel;
@@ -48,7 +49,7 @@ public class AuthorizationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!username.getText().toString().equals("") && !password.getText().toString().equals("")) {
-                    AuthViewModel authViewModel = ViewModelProviders.of(AuthorizationActivity.this).get(AuthViewModel.class);
+                    AuthViewModel authViewModel = App.getAuthViewModel();
                     authViewModel.onReceive(username.getText().toString(), password.getText().toString());
 
                     // подписываемся на сохранение логина, пароля
@@ -78,6 +79,7 @@ public class AuthorizationActivity extends AppCompatActivity {
                             if (aBoolean){
                                 Intent intent = new Intent(AuthorizationActivity.this, MainActivity.class);
                                 startActivity(intent);
+                                finish();
                             }
                         }
                     });

@@ -3,14 +3,11 @@ package com.example.racs.presentation.viewmodel;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.racs.data.api.App;
 import com.example.racs.data.entities.AuthEntity;
@@ -23,7 +20,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AuthViewModel extends AndroidViewModel implements OnReceiverSecretData {
-
 
     private MutableLiveData<AuthEntity> authData;
     private MutableLiveData<AuthPostEntity> authPostData;
@@ -60,6 +56,7 @@ public class AuthViewModel extends AndroidViewModel implements OnReceiverSecretD
     public AuthViewModel(@NonNull Application application) {
         super(application);
     }
+
 
     public LiveData<AuthEntity> getData() {
         if (authData == null) {

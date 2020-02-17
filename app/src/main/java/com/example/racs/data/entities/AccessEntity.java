@@ -1,6 +1,7 @@
 
 package com.example.racs.data.entities;
 
+import com.example.racs.data.repository.datasource.OnReceiveDataListener;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -139,7 +140,7 @@ public class AccessEntity {
         this.results = results;
     }
 
-    public List<UsersEntity.User> searchUsersByLock(Integer lockId, List<AccPOJO> accesses, List<UsersEntity.User> allusers) {
+    public void searchUsersByLock(Integer lockId, List<AccPOJO> accesses, List<UsersEntity.User> allusers, OnReceiveDataListener<List<UsersEntity.User>> onReceiveDataListener) {
         UsersEntity users = new UsersEntity();
         for (AccPOJO i : accesses) {
             if (i.lock == lockId) {
@@ -149,7 +150,7 @@ public class AccessEntity {
                 }
             }
         }
-        return users.getUsers();
+        onReceiveDataListener.onReceive(users.getUsers());
     }
 
     public static String searchUserById(List<UsersEntity.User> allusers, int user_id) {

@@ -1,10 +1,10 @@
 package com.example.racs.data.api;
 
 import com.example.racs.data.entities.LocksEntity;
-
-import java.io.IOException;
+import com.example.racs.data.repository.datasource.OnReceiveDataListener;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LockImpl {
@@ -13,29 +13,38 @@ public class LockImpl {
     private LocksEntity locksEntity;
     private boolean deleted;
 
-    public LocksEntity getLocks(String token, int count) {
-        Call<LocksEntity> call = lockApi.getLocks(token, count);
-        try {
-            Response<LocksEntity> response = call.execute();
-            locksEntity = response.body();
-            return locksEntity;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return locksEntity;
+    public void getLocks(String token, int count, final OnReceiveDataListener<LocksEntity> onReceiveDataListener) {
+
+        lockApi.getLocks(token, count).enqueue(new Callback<LocksEntity>() {
+            @Override
+            public void onResponse(Call<LocksEntity> call, Response<LocksEntity> response) {
+                locksEntity = response.body();
+                onReceiveDataListener.onReceive(locksEntity);
+            }
+
+            @Override
+            public void onFailure(Call<LocksEntity> call, Throwable t) {
+
+            }
+        });
 
     }
 
 
-    public boolean deleteLock(String token, int id) {
-        Call<Void> call = lockApi.deleteLock(token, id);
-        try {
-            Response<Void> response = call.execute();
-            deleted = response.code() == 201;
-            return deleted;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return deleted;
+    public void deleteLock(String token, int id, final OnReceiveDataListener<Boolean> onReceiveDataListener) {
+
+        lockApi.deleteLock(token, id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                deleted = response.code() == 201;
+                onReceiveDataListener.onReceive(deleted);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
     }
 }

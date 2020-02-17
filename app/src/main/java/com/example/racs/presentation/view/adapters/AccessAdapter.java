@@ -15,7 +15,6 @@ import com.example.racs.R;
 import com.example.racs.data.entities.AccessEntity;
 import com.example.racs.data.entities.LocksEntity;
 import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.presentation.view.activities.AccessActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +51,6 @@ public class AccessAdapter extends RecyclerView.Adapter<AccessAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (accesses.size() >= 50 && accesses.size() % 50 == 0 && position == accesses.size() - 20) {
-            AccessActivity.getAccesses(accesses.size() + 50);
-            Log.i("Надо", "Ну прост");
-        }
         AccessEntity.AccPOJO access = accesses.get(position);
         holder.bindViews(access);
 

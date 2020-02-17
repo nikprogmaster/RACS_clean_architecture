@@ -1,14 +1,12 @@
 package com.example.racs.presentation.viewmodel;
 
-import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.LocksEntity;
 import com.example.racs.data.repository.LocksRepository;
 import com.example.racs.domain.usecases.OnCompleteListener;
@@ -19,16 +17,15 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LocksViewModel extends AndroidViewModel {
+public class LocksViewModel extends ViewModel {
 
     private MutableLiveData<List<LocksEntity.Lock>> locksData;
     private LocksRepository locksRepository = new LocksRepository();
     private GetLocks usecaseGetLocks;
     private DeleteLock usecaseDeleteLock;
     private SharedPreferences settings;
-    private static final String APP_PREFERENCES = "mysettings";
     private static final String ACCESS_TOKEN = "ACCESS";
-    private static final int DEFAULT_NUMBER = 50;
+    private static final int DEFAULT_NUMBER = 100;
     private OnCompleteListener<List<LocksEntity.Lock>> onCompleteListener;
     private static final long ACCESS_TOKEN_LIFETIME = 300000;
     private static final Timer timer = new Timer();
@@ -39,9 +36,6 @@ public class LocksViewModel extends AndroidViewModel {
         }
     };
 
-    public LocksViewModel(@NonNull Application application) {
-        super(application);
-    }
 
     public LiveData<List<LocksEntity.Lock>> getData() {
         if (locksData == null) {
@@ -51,10 +45,10 @@ public class LocksViewModel extends AndroidViewModel {
         return locksData;
     }
 
-    private void loadData() {
+    public void loadData() {
         if (usecaseGetLocks == null){
-            settings = getApplication().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-            usecaseGetLocks = new GetLocks(locksRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<LocksEntity.Lock>>() {
+            settings = App.getSettings();
+            usecaseGetLocks = new GetLocks(locksRepository,  new OnCompleteListener<List<LocksEntity.Lock>>() {
                 @Override
                 public void onComplete(List<LocksEntity.Lock> smt) {
                     if (locksData == null) {
@@ -64,10 +58,18 @@ public class LocksViewModel extends AndroidViewModel {
                 }
             });
         }
-        usecaseGetLocks.getLocks();
+        usecaseGetLocks.getLocks(settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER);
     }
 
-    public void deleteLock(){
-
+    public void deleteLock(int id){
+        if(usecaseDeleteLock == null){
+            usecaseDeleteLock = new DeleteLock(locksRepository, new OnCompleteListener<Boolean>() {
+                @Override
+                public void onComplete(Boolean smt) {
+                    loadData();
+                }
+            });
+        }
+        usecaseDeleteLock.deleteLock(settings.getString(ACCESS_TOKEN, ""), id);
     }
 }

@@ -1,15 +1,19 @@
 package com.example.racs.data.api;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.example.racs.data.entities.AccessEntity;
 import com.example.racs.data.entities.AccessPostEntity;
 import com.example.racs.data.entities.UsersEntity;
+import com.example.racs.data.repository.datasource.OnReceiveDataListener;
 
 import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AccessImpl {
@@ -20,47 +24,63 @@ public class AccessImpl {
     private boolean added;
 
     @Nullable
-    public AccessEntity getAccesses(String token, int n) {
-        Call<AccessEntity> call = accessApi.getAccesses(token, n);
-        try {
-            Response<AccessEntity> response = call.execute();
-            accessEntity = response.body();
-            return accessEntity;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return accessEntity;
+    public void getAccesses(String token, int count, final OnReceiveDataListener<AccessEntity> onReceiveDataListener) {
+        accessApi.getAccesses(token, count).enqueue(new Callback<AccessEntity>() {
+            @Override
+            public void onResponse(Call<AccessEntity> call, Response<AccessEntity> response) {
+                accessEntity = response.body();
+                onReceiveDataListener.onReceive(accessEntity);
+            }
+
+            @Override
+            public void onFailure(Call<AccessEntity> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
-    public boolean postAccess(String token, AccessPostEntity body) {
-        Call<AccessEntity> call = accessApi.postAccess(token, body);
-        try {
-            Response<AccessEntity> response = call.execute();
-            added = response.code() == 201;
-            return added;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return added;
+    public void postAccess(String token, AccessPostEntity body, final OnReceiveDataListener<Boolean> onReceiveDataListener) {
+       accessApi.postAccess(token, body).enqueue(new Callback<AccessEntity>() {
+           @Override
+           public void onResponse(Call<AccessEntity> call, Response<AccessEntity> response) {
+               added = response.code() == 201 || response.code() == 200;
+               onReceiveDataListener.onReceive(added);
+           }
+
+           @Override
+           public void onFailure(Call<AccessEntity> call, Throwable t) {
+
+           }
+       });
+
     }
 
-    public boolean deleteAccess(String token, int id) {
-        Call<Void> call = accessApi.deleteAccess(token, id);
-        try {
-            Response<Void> response = call.execute();
-            deleted = response.code() == 201;
-            return deleted;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return deleted;
+    public void deleteAccess(String token, int id, final OnReceiveDataListener<Boolean> onReceiveDataListener) {
+        accessApi.deleteAccess(token, id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                deleted = response.code() == 201 || response.code() == 200;
+                onReceiveDataListener.onReceive(added);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Nullable
-    public List<UsersEntity.User> getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> allusers) {
+
+    public void getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> allusers, final OnReceiveDataListener<List<UsersEntity.User>> dataListener) {
         if (accessEntity != null) {
-            return accessEntity.searchUsersByLock(lockId, accesses, allusers);
-        } else return null;
+            OnReceiveDataListener<List<UsersEntity.User>> onReceiveDataListener = new OnReceiveDataListener<List<UsersEntity.User>>() {
+                @Override
+                public void onReceive(List<UsersEntity.User> obj) {
+                    dataListener.onReceive(obj);
+                }
+            };
+            accessEntity.searchUsersByLock(lockId, accesses, allusers, onReceiveDataListener);
+        }
     }
 
 }

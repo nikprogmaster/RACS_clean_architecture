@@ -1,7 +1,6 @@
 package com.example.racs.presentation.view.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,47 +12,29 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.data.repository.LocksRepository;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.deleteusecases.DeleteLock;
-import com.example.racs.domain.usecases.getusecases.GetLocks;
 import com.example.racs.presentation.view.activities.LockActivity;
 import com.example.racs.presentation.view.adapters.LocksAdapter;
 import com.example.racs.presentation.viewmodel.LocksViewModel;
 
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class LocksFragment extends Fragment {
 
     private static RecyclerView locks_recycler;
     private TextView tw;
-    private static final int DEFAULT_NUMBER = 50;
     private static LocksAdapter locks_adapter;
     public static List<LocksEntity.Lock> locksList;
-    private static SharedPreferences settings;
-    private static final String ACCESS_TOKEN = "ACCESS";
-    private static final String APP_PREFERENCES = "mysettings";
-    private static GetLocks usecaseGetLocks;
-    private static DeleteLock usecaseDeleteLock;
-    private static final LocksRepository locksRepository = new LocksRepository();
     private LocksAdapter.OnDeleteClickListener onDeleteClickListener = new LocksAdapter.OnDeleteClickListener() {
         @Override
         public void onDelete(int id) {
-            usecaseDeleteLock = new DeleteLock(locksRepository, settings.getString(ACCESS_TOKEN, ""), id, new OnCompleteListener<Boolean>() {
-                @Override
-                public void onComplete(Boolean smt) {
-                    getLocks(locksList.size());
-                }
-            });
-            usecaseDeleteLock.deleteLock();
+            LocksViewModel locksViewModel = App.getLocksViewModel();
+            locksViewModel.deleteLock(id);
         }
     };
 
@@ -78,7 +59,6 @@ public class LocksFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        settings = getActivity().getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         LocksAdapter.OnLockClickListener onLockClickListener = new LocksAdapter.OnLockClickListener() {
             @Override
@@ -93,29 +73,15 @@ public class LocksFragment extends Fragment {
         locks_recycler.addItemDecoration(itemDecoration);
         locks_recycler.setAdapter(locks_adapter);
 
-        getLocks(DEFAULT_NUMBER);
+        observeLocks();
 
+        updateLocks();
     }
 
-    //  no usage
-    /*public void onBinClick(View view) {
-        View parent = (View) view.getParent();
-        TextView t = (TextView) parent.findViewById(R.id.tw_id);
-        String s = String.valueOf(t.getText());
-        int id = Integer.valueOf(s);
-        usecaseDeleteLock = new DeleteLock(locksRepository, settings.getString(ACCESS_TOKEN, ""), id, new OnCompleteListener<Boolean>() {
-            @Override
-            public void onComplete(Boolean smt) {
-                getLocks(locksList.size());
-            }
-        });
-        usecaseDeleteLock.deleteLock();
-
-    }*/
 
 
-    public void getLocks(int count) {
-        LocksViewModel locksViewModel = ViewModelProviders.of(this).get(LocksViewModel.class);
+    private void observeLocks() {
+        LocksViewModel locksViewModel = App.getLocksViewModel();
         LiveData<List<LocksEntity.Lock>> listLiveData = locksViewModel.getData();
         listLiveData.observe(this, new Observer<List<LocksEntity.Lock>>() {
             @Override
@@ -124,5 +90,10 @@ public class LocksFragment extends Fragment {
                 locks_adapter.replaceLocks(locksList);
             }
         });
+    }
+
+    private void updateLocks(){
+        LocksViewModel locksViewModel = App.getLocksViewModel();
+        locksViewModel.loadData();
     }
 }

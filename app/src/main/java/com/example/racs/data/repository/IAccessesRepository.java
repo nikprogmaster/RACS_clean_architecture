@@ -5,18 +5,19 @@ import androidx.annotation.Nullable;
 import com.example.racs.data.entities.AccessEntity;
 import com.example.racs.data.entities.AccessPostEntity;
 import com.example.racs.data.entities.UsersEntity;
+import com.example.racs.domain.usecases.OnCompleteListener;
 
 import java.util.List;
 
 public interface IAccessesRepository {
 
     @Nullable
-    List<AccessEntity.AccPOJO> getAccesses(String token, int count);
+    void getAccesses(String token, int count, OnCompleteListener<List<AccessEntity.AccPOJO>> onCompleteListener);
 
-    boolean addAssess(String token, AccessPostEntity body);
+    void addAssess(String token, AccessPostEntity body, OnCompleteListener<Boolean> onCompleteListener);
 
-    boolean deleteAccess(String token, int id);
+    void deleteAccess(String token, int id, OnCompleteListener<Boolean> onCompleteListener);
 
     @Nullable
-    List<UsersEntity.User> getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> users);
+    void getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> users, OnCompleteListener<List<UsersEntity.User>> onCompleteListener);
 }

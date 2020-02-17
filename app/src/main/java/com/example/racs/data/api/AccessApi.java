@@ -14,7 +14,7 @@ import retrofit2.http.Query;
 
 public interface AccessApi {
 
-    @GET("accesses")
+    @GET("accesses/")
     Call<AccessEntity> getAccesses(@Header("Authorization") String token, @Query("count") int count);
 
     @POST("accesses/")

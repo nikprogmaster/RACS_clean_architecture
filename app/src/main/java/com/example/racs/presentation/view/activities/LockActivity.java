@@ -59,7 +59,7 @@ public class LockActivity extends AppCompatActivity {
             }
         });
 
-        usecaseGetUsers = new GetUsers(usersRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<UsersEntity.User>>() {
+        /*usecaseGetUsers = new GetUsers(usersRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<UsersEntity.User>>() {
             @Override
             public void onComplete(List<UsersEntity.User> smt) {
                 allusers = smt;
@@ -74,7 +74,7 @@ public class LockActivity extends AppCompatActivity {
                 onCompleteListener.onComplete(accesses);
             }
         });
-        usecaseGetAccesses.getAccesses();
+        usecaseGetAccesses.getAccesses();*/
 
         onCompleteListener = new OnCompleteListener<List<AccessEntity.AccPOJO>>() {
             @Override

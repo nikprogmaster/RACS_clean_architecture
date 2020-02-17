@@ -1,5 +1,7 @@
 package com.example.racs.data.repository.datasource;
 
+import android.util.Log;
+
 import com.example.racs.data.api.AccessImpl;
 import com.example.racs.data.api.AuthorizationImpl;
 import com.example.racs.data.api.LockImpl;
@@ -9,7 +11,6 @@ import com.example.racs.data.entities.AccessPostEntity;
 import com.example.racs.data.entities.AuthEntity;
 import com.example.racs.data.entities.AuthPostEntity;
 import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.data.entities.RefreshEntity;
 import com.example.racs.data.entities.UserPostEntity;
 import com.example.racs.data.entities.UsersEntity;
 
@@ -31,49 +32,108 @@ public class LocalApiDataSource implements DataSource {
 
 
     @Override
-    public List<LocksEntity.Lock> locksList(String token, int count) {
-        return lockImpl.getLocks(token, count).getResults();
+    public void locksList(String token, int count, final OnReceiveDataListener<List<LocksEntity.Lock>> dataListener) {
+        OnReceiveDataListener<LocksEntity> onReceiveDataListener = new OnReceiveDataListener<LocksEntity>() {
+            @Override
+            public void onReceive(LocksEntity obj) {
+                dataListener.onReceive(obj.getResults());
+            }
+        };
+        lockImpl.getLocks(token, count, onReceiveDataListener);
     }
 
 
     @Override
-    public List<UsersEntity.User> usersList(String token, int count) {
-        return userImpl.getUsers(token, count).getUsers();
+    public void usersList(String token, int count, final OnReceiveDataListener<List<UsersEntity.User>> dataListener) {
+        OnReceiveDataListener<UsersEntity> onReceiveDataListener = new OnReceiveDataListener<UsersEntity>() {
+            @Override
+            public void onReceive(UsersEntity obj) {
+                if (obj == null){
+                    dataListener.onReceive(null);
+                } else{
+                    dataListener.onReceive(obj.getUsers());
+                }
+                Log.i("DataSouceImpl", "Ну ок, сюда пришли");
+            }
+        };
+        userImpl.getUsers(token, count, onReceiveDataListener);
     }
 
     @Override
-    public List<AccessEntity.AccPOJO> accessesList(String token, int count) {
-        return accessImpl.getAccesses(token, count).getResults();
+    public void accessesList(String token, int count, final OnReceiveDataListener<List<AccessEntity.AccPOJO>> dataListener) {
+        OnReceiveDataListener<AccessEntity> onReceiveDataListener = new OnReceiveDataListener<AccessEntity>() {
+            @Override
+            public void onReceive(AccessEntity obj) {
+                dataListener.onReceive(obj.getResults());
+            }
+        };
+        accessImpl.getAccesses(token, count, onReceiveDataListener);
     }
 
     @Override
-    public List<UsersEntity.User> getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> allusers) {
-        return accessImpl.getAccessesToLock(lockId, accesses, allusers);
+    public void getAccessesToLock(Integer lockId, List<AccessEntity.AccPOJO> accesses, List<UsersEntity.User> allusers, final OnReceiveDataListener<List<UsersEntity.User>> dataListener) {
+        OnReceiveDataListener<List<UsersEntity.User>> onReceiveDataListener = new OnReceiveDataListener<List<UsersEntity.User>>() {
+            @Override
+            public void onReceive(List<UsersEntity.User> obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        accessImpl.getAccessesToLock(lockId, accesses, allusers, onReceiveDataListener);
     }
 
     @Override
-    public boolean addAccess(String token, AccessPostEntity body) {
-        return accessImpl.postAccess(token, body);
+    public void addAccess(String token, AccessPostEntity body, final OnReceiveDataListener<Boolean> dataListener) {
+        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
+            @Override
+            public void onReceive(Boolean obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        accessImpl.postAccess(token, body, onReceiveDataListener);
     }
 
     @Override
-    public boolean addUser(String token, UserPostEntity body) {
-        return userImpl.addUser(token, body);
+    public void addUser(String token, UserPostEntity body, final OnReceiveDataListener<Boolean> dataListener) {
+        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
+            @Override
+            public void onReceive(Boolean obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        userImpl.addUser(token, body, onReceiveDataListener);
     }
 
     @Override
-    public boolean deleteAccess(String token, int id) {
-        return accessImpl.deleteAccess(token, id);
+    public void deleteAccess(String token, int id, final OnReceiveDataListener<Boolean> dataListener) {
+        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
+            @Override
+            public void onReceive(Boolean obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        accessImpl.deleteAccess(token, id, onReceiveDataListener);
     }
 
     @Override
-    public boolean deleteUser(String token, int id) {
-        return userImpl.deleteUser(token, id);
+    public void deleteUser(String token, int id, final OnReceiveDataListener<Boolean> dataListener) {
+        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
+            @Override
+            public void onReceive(Boolean obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        userImpl.deleteUser(token, id, onReceiveDataListener);
     }
 
     @Override
-    public boolean deleteLock(String token, int id) {
-        return lockImpl.deleteLock(token, id);
+    public void deleteLock(String token, int id, final OnReceiveDataListener<Boolean> dataListener) {
+        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
+            @Override
+            public void onReceive(Boolean obj) {
+                dataListener.onReceive(obj);
+            }
+        };
+        lockImpl.deleteLock(token, id, onReceiveDataListener);
     }
 
     @Override

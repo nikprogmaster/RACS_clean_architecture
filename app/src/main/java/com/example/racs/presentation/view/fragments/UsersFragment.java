@@ -1,8 +1,8 @@
 package com.example.racs.presentation.view.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,40 +11,40 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.data.repository.UsersRepository;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.deleteusecases.DeleteUser;
-import com.example.racs.domain.usecases.getusecases.GetUsers;
-import com.example.racs.presentation.view.activities.AccessActivity;
 import com.example.racs.presentation.view.activities.AddUserActivity;
-import com.example.racs.presentation.view.adapters.UserHolder;
+import com.example.racs.presentation.view.activities.OnAccessListClickListener;
 import com.example.racs.presentation.view.adapters.UsersAdapter;
+import com.example.racs.presentation.viewmodel.OnStopLoadingListener;
+import com.example.racs.presentation.viewmodel.UsersViewModel;
 
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class UsersFragment extends Fragment {
 
-    private static final int DEFAULT_NUMBER = 50;
     private static RecyclerView usersRecycler;
     private static UsersAdapter usersAdapter;
     private TextView undlined;
     private static boolean isAdded = false;
-    private static List<UsersEntity.User> users;
-    private static SharedPreferences settings;
-    private static final String ACCESS_TOKEN = "ACCESS";
-    private static final String APP_PREFERENCES = "mysettings";
+    private static boolean isDeleted = false;
+    private static List<UsersEntity.User> usersList;
     private Button add_btn;
-    private static final UsersRepository usersRepository = new UsersRepository();
-    private static GetUsers usecaseGetUsers;
-    private static DeleteUser usecaseDeleteUser;
+    public static final String ADDED_NEW_VALUE = "ADDED NEW VALUE";
+    private static final int DEFAULT_NUMBER = 100;
+    private OnAccessListClickListener onAccessListClickListener;
+    private LiveData<List<UsersEntity.User>> userLiveData;
+    private UsersViewModel usersViewModel;
+    private boolean onStop = false;
 
     public static UsersFragment newInstance() {
 
@@ -68,23 +68,22 @@ public class UsersFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        settings = getActivity().getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
-        usersAdapter = new UsersAdapter(new UserHolder.OnBinClickListener() {
+        onAccessListClickListener = (OnAccessListClickListener) getActivity();
+        usersAdapter = new UsersAdapter(new UsersAdapter.UsersAdapterListener() {
             @Override
-            public void onBinClick(View v, long id) {
-                usecaseDeleteUser = new DeleteUser(usersRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<Boolean>() {
-                    @Override
-                    public void onComplete(Boolean smt) {
-                        getUsers(DEFAULT_NUMBER);
-                    }
-                });
-                usecaseDeleteUser.deleteUser();
+            public void onBinClick(int id) {
+                usersViewModel.deleteUser(id);
+                isDeleted = usersViewModel.isDeleted();
             }
         });
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), RecyclerView.VERTICAL);
         usersRecycler.addItemDecoration(itemDecoration);
-        getUsers(DEFAULT_NUMBER);
+        usersRecycler.setAdapter(usersAdapter);
+
+        observeUsers();
+
+        initScrollListener();
 
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,10 +96,12 @@ public class UsersFragment extends Fragment {
         undlined.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AccessActivity.class);
-                startActivity(intent);
+                onAccessListClickListener.onAccessClick();
             }
         });
+
+        updateUsers(userLiveData.getValue().size());
+
     }
 
     @Override
@@ -109,21 +110,60 @@ public class UsersFragment extends Fragment {
         if (data == null) {
             return;
         }
-        isAdded = data.getBooleanExtra(AddUserActivity.ADDED_NEW_VALUE, isAdded);
-        getUsers(isAdded ? users.size() + 1 : users.size());
+        isAdded = data.getBooleanExtra(ADDED_NEW_VALUE, isAdded);
+        observeUsers();
     }
 
-    public static void getUsers(int count) {
-        usecaseGetUsers = new GetUsers(usersRepository, settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER, new OnCompleteListener<List<UsersEntity.User>>() {
+    private void updateUsers(int count) {
+        if(usersViewModel != null){
+            usersViewModel.loadData(count);
+        }
+    }
+
+    private void observeUsers() {
+        usersViewModel = App.getUsersViewModel();
+        Log.i("Observe", "сюда пришли");
+        userLiveData = usersViewModel.getData(DEFAULT_NUMBER);
+        usersList = userLiveData.getValue();
+        userLiveData.observe(this, new Observer<List<UsersEntity.User>>() {
             @Override
-            public void onComplete(List<UsersEntity.User> smt) {
-                users = smt;
-                usersRecycler.setAdapter(usersAdapter);
-                usersAdapter.replaceUsers(users);
+            public void onChanged(List<UsersEntity.User> users) {
+                usersList = users;
+                usersAdapter.replaceUsers(usersList);
             }
         });
-        usecaseGetUsers.getUsers();
+    }
 
+    private void initScrollListener(){
+        RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                usersViewModel.setOnStopLoadingListener(new OnStopLoadingListener() {
+                    @Override
+                    public void onStop() {
+                        onStop = true;
+                    }
+                });
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int visibleItemCount = layoutManager.getChildCount();//смотрим сколько элементов на экране
+                int totalItemCount = layoutManager.getItemCount();//сколько всего элементов
+                int firstVisibleItems = layoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+
+                if (!App.getUsersViewModel().isLoading() && !onStop) {//проверяем, грузим мы что-то или нет, эта переменная должна быть вне класса  OnScrollListener
+                    Log.i("scrollListener", "в первом if");
+                    Log.i("visibleCount+firstVisib", String.valueOf(visibleItemCount+firstVisibleItems));
+                    Log.i("totalItemCount", String.valueOf(totalItemCount));
+                    if ( (visibleItemCount+firstVisibleItems) > totalItemCount - 50) {
+                        Log.i("Сколько вызываем", "= " + (userLiveData.getValue().size() + DEFAULT_NUMBER));
+
+                        App.getUsersViewModel().loadData(userLiveData.getValue().size() + DEFAULT_NUMBER);
+                    }
+
+                }
+            }
+        };
+        usersRecycler.addOnScrollListener(scrollListener);
     }
 
 }

@@ -27,7 +27,6 @@
         </activity>
         <activity android:name=".presentation.view.activities.LockActivity" />
         <activity android:name=".presentation.view.activities.AddAccessActivity" />
-        <activity android:name=".presentation.view.activities.AccessActivity" />
         <activity android:name=".presentation.view.activities.AddUserActivity" />
         <activity android:name=".presentation.view.activities.SettingsActivity" />
         <activity android:name=".presentation.view.activities.MainActivity">

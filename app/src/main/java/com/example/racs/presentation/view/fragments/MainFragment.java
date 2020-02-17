@@ -12,17 +12,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
+import com.example.racs.data.api.App;
 import com.example.racs.data.entities.LocksEntity;
 import com.example.racs.presentation.view.activities.AuthorizationActivity;
 import com.example.racs.presentation.view.activities.LockActivity;
 import com.example.racs.presentation.view.activities.SettingsActivity;
 import com.example.racs.presentation.view.adapters.LocksAdapter;
+import com.example.racs.presentation.viewmodel.AccessViewModel;
 import com.example.racs.presentation.viewmodel.LocksViewModel;
+import com.example.racs.presentation.viewmodel.UsersViewModel;
 
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class MainFragment extends Fragment {
     private static List<LocksEntity.Lock> locksList;
     private static final String ACTIVITY_NAME = "MainActivity";
     private static final String NAME = "activity name";
+    private static boolean firstStarted = true;
     private ImageView settingsButton;
+    private static final int DEFAULT_NUMBER = 100;
 
 
     public static MainFragment newInstance() {
@@ -81,12 +85,24 @@ public class MainFragment extends Fragment {
         });
 
         //Получаем список замков от сервера
-        getLocks();
+        observeLocks();
+
+        //Обновляем данные
+        updateLocks();
+
+        if (firstStarted){
+            //Загружаем список пользователей
+            loadUsers();
+            //Загружаем список доступов
+            loadAccesses();
+            firstStarted = false;
+        }
+
     }
 
 
-    public void getLocks() {
-        LocksViewModel locksViewModel = ViewModelProviders.of(this).get(LocksViewModel.class);
+    private void observeLocks() {
+        LocksViewModel locksViewModel = App.getLocksViewModel();
         LiveData<List<LocksEntity.Lock>> listLiveData = locksViewModel.getData();
         listLiveData.observe(this, new Observer<List<LocksEntity.Lock>>() {
             @Override
@@ -96,6 +112,21 @@ public class MainFragment extends Fragment {
                 locks_adapter.replaceLocks(locks);
             }
         });
+    }
+
+    private void updateLocks(){
+        LocksViewModel locksViewModel = App.getLocksViewModel();
+        locksViewModel.loadData();
+    }
+
+    private void loadUsers(){
+        UsersViewModel usersViewModel = App.getUsersViewModel();
+        usersViewModel.getData(DEFAULT_NUMBER);
+    }
+
+    private void loadAccesses(){
+        AccessViewModel accessViewModel = App.getAccessViewModel();
+        accessViewModel.getData();
     }
 
 
