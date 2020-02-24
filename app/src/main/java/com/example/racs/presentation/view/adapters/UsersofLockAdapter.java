@@ -10,14 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
-import com.example.racs.data.entities.UsersEntity;
+import com.example.racs.model.data.UsersEntityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsersofLockAdapter extends RecyclerView.Adapter<UsersofLockAdapter.UserHolder> {
 
-    private final List<UsersEntity.User> users_list = new ArrayList<>();
+    private final List<UsersEntityData.User> users_list = new ArrayList<>();
 
 
     @NonNull
@@ -31,7 +31,7 @@ public class UsersofLockAdapter extends RecyclerView.Adapter<UsersofLockAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull UserHolder holder, int position) {
-        UsersEntity.User user = users_list.get(position);
+        UsersEntityData.User user = users_list.get(position);
         String NSP = user.getLastName() + " " + user.getFirstName() + " " + user.getPatronymic();
         holder.nsp.setText(NSP);
         holder.uol_id.setText(String.valueOf(user.getUId()));
@@ -49,7 +49,7 @@ public class UsersofLockAdapter extends RecyclerView.Adapter<UsersofLockAdapter.
         return users_list.size();
     }
 
-    public void replaceUsers(List<UsersEntity.User> u) {
+    public void replaceUsers(List<UsersEntityData.User> u) {
         this.users_list.clear();
         this.users_list.addAll(u);
         notifyDataSetChanged();

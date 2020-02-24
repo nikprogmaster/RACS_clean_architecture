@@ -6,38 +6,36 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.racs.data.api.App;
-import com.example.racs.data.entities.LocksEntity;
+import com.example.racs.App;
+import com.example.racs.model.data.LocksEntityData;
 import com.example.racs.data.repository.LocksRepository;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.deleteusecases.DeleteLock;
-import com.example.racs.domain.usecases.getusecases.GetLocks;
+import com.example.racs.domain.usecases.deleteusecases.DeleteLockInteractor;
+import com.example.racs.domain.usecases.getusecases.GetLocksInteractor;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class LocksViewModel extends ViewModel {
 
-    private MutableLiveData<List<LocksEntity.Lock>> locksData;
-    private LocksRepository locksRepository = new LocksRepository();
-    private GetLocks usecaseGetLocks;
-    private DeleteLock usecaseDeleteLock;
-    private SharedPreferences settings;
     private static final String ACCESS_TOKEN = "ACCESS";
-    private static final int DEFAULT_NUMBER = 100;
-    private OnCompleteListener<List<LocksEntity.Lock>> onCompleteListener;
     private static final long ACCESS_TOKEN_LIFETIME = 300000;
-    private static final Timer timer = new Timer();
-    private final TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            loadData();
-        }
-    };
+    private static final int DEFAULT_NUMBER = 100;
 
+    private MutableLiveData<List<LocksEntityData.Lock>> locksData;
+    private GetLocksInteractor getLocksInteractor;
+    private DeleteLockInteractor deleteLockInteractor;
+    private SharedPreferences settings;
+    private LocksRepository locksRepository;
 
-    public LiveData<List<LocksEntity.Lock>> getData() {
+    public LocksViewModel(LocksRepository locksRepository) {
+        this.locksRepository = locksRepository;
+    }
+
+    public LiveData<List<LocksEntityData.Lock>> getData() {
         if (locksData == null) {
             locksData = new MutableLiveData<>();
             loadData();
@@ -46,30 +44,43 @@ public class LocksViewModel extends ViewModel {
     }
 
     public void loadData() {
-        if (usecaseGetLocks == null){
-            settings = App.getSettings();
-            usecaseGetLocks = new GetLocks(locksRepository,  new OnCompleteListener<List<LocksEntity.Lock>>() {
-                @Override
-                public void onComplete(List<LocksEntity.Lock> smt) {
-                    if (locksData == null) {
-                        timer.schedule(timerTask, ACCESS_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME);
-                    }
-                    locksData.setValue(smt);
-                }
-            });
+        if (getLocksInteractor == null) {
+            getLocksInteractor = new GetLocksInteractor(locksRepository);
         }
-        usecaseGetLocks.getLocks(settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER);
+        settings = App.getSettings();
+        getLocksInteractor.getLocks(settings.getString(ACCESS_TOKEN, ""), DEFAULT_NUMBER)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableSingleObserver<LocksEntityData>() {
+                    @Override
+                    public void onSuccess(LocksEntityData locksEntityData) {
+                        locksData.setValue(locksEntityData.getResults());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-    public void deleteLock(int id){
-        if(usecaseDeleteLock == null){
-            usecaseDeleteLock = new DeleteLock(locksRepository, new OnCompleteListener<Boolean>() {
-                @Override
-                public void onComplete(Boolean smt) {
-                    loadData();
-                }
-            });
+    public void deleteLock(int id) {
+        if (deleteLockInteractor == null) {
+            deleteLockInteractor = new DeleteLockInteractor(locksRepository);
         }
-        usecaseDeleteLock.deleteLock(settings.getString(ACCESS_TOKEN, ""), id);
+        deleteLockInteractor.deleteLock(settings.getString(ACCESS_TOKEN, ""), id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        loadData();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }

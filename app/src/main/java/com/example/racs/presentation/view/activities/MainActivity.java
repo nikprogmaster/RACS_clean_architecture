@@ -5,18 +5,22 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.racs.R;
-import com.example.racs.data.api.App;
 import com.example.racs.presentation.view.fragments.AccessFragment;
+import com.example.racs.presentation.view.fragments.AddAccessFragment;
+import com.example.racs.presentation.view.fragments.AddUserFragment;
+import com.example.racs.presentation.view.fragments.LockUsersFragment;
 import com.example.racs.presentation.view.fragments.LocksFragment;
 import com.example.racs.presentation.view.fragments.MainFragment;
 import com.example.racs.presentation.view.fragments.UsersFragment;
-import com.example.racs.presentation.viewmodel.AuthViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity implements OnAccessListClickListener, OnBackClickListener {
+public class MainActivity extends AppCompatActivity implements OnOpenFragmentManager, OnCloseFragmentManager {
+
+    private static final String ACCESS_FRAGMENT_NAME = "ACCESS_FRAGMENT";
+    private static final String ADD_ACCESS_FRAGMENT_NAME = "ADD_ACCESS_FRAGMENT";
 
     private BottomNavigationView bottomNavigationView;
 
@@ -33,42 +37,85 @@ public class MainActivity extends AppCompatActivity implements OnAccessListClick
                 .commit();
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.locks:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.host_activity, LocksFragment.newInstance())
-                                .commit();
-                        break;
-                    case R.id.users:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.host_activity, UsersFragment.newInstance())
-                                .commit();
-                        break;
-                    case R.id.main:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.host_activity, MainFragment.newInstance())
-                                .commit();
-                        break;
-                }
-                return true;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.locks:
+                    clearFragmentBackStack();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.host_activity, LocksFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
+                    break;
+                case R.id.users:
+                    clearFragmentBackStack();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.host_activity, UsersFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
+                    break;
+                case R.id.main:
+                    clearFragmentBackStack();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.host_activity, MainFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
+                    break;
             }
+            return true;
         });
     }
 
     @Override
-    public void onAccessClick() {
+    public void onAccessFragmentOpen() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.host_activity, AccessFragment.newInstance())
+                .addToBackStack(null)
                 .commit();
     }
 
     @Override
-    public void onBackClick() {
+    public void onAddAccessFragmentOpen() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.host_activity, UsersFragment.newInstance())
+                .replace(R.id.host_activity, AddAccessFragment.newInstance())
+                .addToBackStack(null)
                 .commit();
     }
+
+    @Override
+    public void onAddUserFragmentOpen() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.host_activity, AddUserFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onLockUsersFragmentOpen(int lockId) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.host_activity, LockUsersFragment.newInstance(lockId))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onClose() {
+        getSupportFragmentManager()
+                .popBackStack();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            finish();
+        }
+    }
+
+    private void clearFragmentBackStack() {
+        FragmentManager fm = getSupportFragmentManager();
+        for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+    }
+
 }

@@ -62,6 +62,7 @@
     <string name="users_managering_users">Управление пользователями</string>
     <string name="error_message">Заполните поля!</string>
     <string name="lock">Замок</string>
+    <string name="your_text">Выбери дату</string>
 
 
     <string-array name="roles">

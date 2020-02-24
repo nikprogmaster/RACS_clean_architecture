@@ -1,8 +1,9 @@
 package com.example.racs.data.api;
 
-import com.example.racs.data.entities.LockPostEntity;
-import com.example.racs.data.entities.LocksEntity;
+import com.example.racs.model.data.LocksEntityData;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -18,16 +19,14 @@ public interface LockApi {
 
     //запрос на получение списка замков
     @GET("locks/")
-    Call<LocksEntity> getLocks(@Header("Authorization") String token, @Query("count") int count);
+    Single<LocksEntityData> getLocks(@Header("Authorization") String token, @Query("count") int count);
 
     //запрос на получение даты запуска сервере
+    @Deprecated
     @GET()
     Call<String> getDate(@Header("Authorization") String token, @Url String url);
 
-    //добавление замков
-    @POST("locks/")
-    Call<LocksEntity> addLock(@Header("Authorization") String token, @Body LockPostEntity body);
 
     @DELETE("locksList/{id}/")
-    Call<Void> deleteLock(@Header("Authorization") String token, @Path("id") int id);
+    Completable deleteLock(@Header("Authorization") String token, @Path("id") int id);
 }

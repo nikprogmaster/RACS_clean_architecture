@@ -11,33 +11,27 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.racs.App;
 import com.example.racs.R;
-import com.example.racs.data.api.App;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class SettingsActivity extends AppCompatActivity {
-    private SharedPreferences settings;
-    private Spinner ips;
+
     private static final String APP_PREFERENCES = "mysettings";
     private static final String APP_PREFERENCES_IP = "IP";
     private static final String TEXTVIEW_STATE_KEY = "TEXTVIEW_STATE_KEY";
     private static final String POSITION_KEY = "POSITION_KEY";
-    private static String ip;
     private static final String MAIN_ACTIVITY = "MainActivity";
     private static final String AUTH_ACTIVITY = "AuthActivity";
     private static final String NAME = "activity name";
 
+    private SharedPreferences settings;
+    private Spinner ips;
+    private static String ip;
 
-    public static void setIp(String ip) {
-        SettingsActivity.ip = ip;
-    }
-
-    public static String getIp() {
-        return ip;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +93,14 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+    }
+
+    public static void setIp(String ip) {
+        SettingsActivity.ip = ip;
+    }
+
+    public static String getIp() {
+        return ip;
     }
 
     public void onBackClick(View view) {

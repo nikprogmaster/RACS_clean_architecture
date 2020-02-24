@@ -1,18 +1,17 @@
 package com.example.racs.data.repository;
 
-import com.example.racs.data.entities.UserPostEntity;
-import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.data.repository.datasource.OnReceiveDataListener;
-import com.example.racs.domain.usecases.OnCompleteListener;
+import com.example.racs.model.data.UserPostEntityData;
+import com.example.racs.model.data.UsersEntityData;
 
-import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 
 public interface IUsersReposytory {
 
-    void getUsers(String token, int count, OnCompleteListener<List<UsersEntity.User>> dataListener);
+    Observable<UsersEntityData> getUsers(String token, int count);
 
-    void addUser(String token, UserPostEntity body, OnCompleteListener<Boolean> onCompleteListener);
+    Completable addUser(String token, UserPostEntityData body);
 
-    void deleteUser(String token, int id, OnCompleteListener<Boolean> onCompleteListener);
+    Completable deleteUser(String token, int id);
 
 }

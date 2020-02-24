@@ -8,25 +8,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.racs.App;
 import com.example.racs.R;
-import com.example.racs.data.api.App;
-import com.example.racs.data.entities.AuthEntity;
-import com.example.racs.data.entities.AuthPostEntity;
+import com.example.racs.model.data.AuthEntityData;
+import com.example.racs.model.data.AuthPostEntityData;
 import com.example.racs.presentation.viewmodel.AuthViewModel;
 
 public class AuthorizationActivity extends AppCompatActivity {
 
-    private EditText username, password;
-    private Button enter_btn;
-    private ImageView settingsButton;
     private static final String ACTIVITY_NAME = "AuthActivity";
     private static final String NAME = "activity name";
+
+    private EditText username;
+    private EditText password;
+    private Button enterButton;
+    private ImageView settingsButton;
+    private AuthViewModel authViewModel;
 
 
     @Override
@@ -35,69 +37,66 @@ public class AuthorizationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_authorization);
         bindViews();
 
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AuthorizationActivity.this, SettingsActivity.class);
-                intent.putExtra(NAME, ACTIVITY_NAME);
+        authViewModel = ViewModelProviders.of(this, App.getAuthModelFactory())
+                .get(AuthViewModel.class);
+
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AuthorizationActivity.this, SettingsActivity.class);
+            intent.putExtra(NAME, ACTIVITY_NAME);
+            startActivity(intent);
+            finish();
+        });
+
+        enterButton.setOnClickListener(v -> onEnterButtonClick());
+    }
+
+    private void onEnterButtonClick() {
+        if (!username.getText().toString().equals("") && !password.getText().toString().equals("")) {
+
+            authViewModel.onReceive(username.getText().toString(), password.getText().toString());
+
+            // подписываемся на сохранение логина, пароля
+            observeOnAuthData();
+
+            // подписываемся на изменение access-токена
+            observeOnAccessToken();
+
+            observeOnFirstStarted();
+
+        } else {
+            username.setError(getResources().getString(R.string.error_message));
+        }
+    }
+
+    private void observeOnAuthData() {
+        LiveData<AuthPostEntityData> loginPassData = authViewModel.getLoginPassData();
+        loginPassData.observe(AuthorizationActivity.this, authPostEntityData -> {
+            username.setText(authPostEntityData.getEmail());
+            password.setText(authPostEntityData.getPassword());
+        });
+    }
+
+    private void observeOnAccessToken() {
+        LiveData<AuthEntityData> data = authViewModel.getData();
+        data.observe(AuthorizationActivity.this, authEntityData ->
+                Toast.makeText(AuthorizationActivity.this, "Access token changed", Toast.LENGTH_SHORT).show());
+    }
+
+    private void observeOnFirstStarted() {
+        LiveData<Boolean> firstStarted = authViewModel.getFirstStarted();
+        firstStarted.observe(AuthorizationActivity.this, aBoolean -> {
+            if (aBoolean) {
+                Intent intent = new Intent(AuthorizationActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
-
-        enter_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!username.getText().toString().equals("") && !password.getText().toString().equals("")) {
-                    AuthViewModel authViewModel = App.getAuthViewModel();
-                    authViewModel.onReceive(username.getText().toString(), password.getText().toString());
-
-                    // подписываемся на сохранение логина, пароля
-                    LiveData<AuthPostEntity> loginPassData = authViewModel.getLoginPassData();
-                    loginPassData.observe(AuthorizationActivity.this, new Observer<AuthPostEntity>() {
-                        @Override
-                        public void onChanged(AuthPostEntity authPostEntity) {
-                            username.setText(authPostEntity.getEmail());
-                            password.setText(authPostEntity.getPassword());
-                        }
-                    });
-
-                    // подписываемся на изменение access-токена
-                    LiveData<AuthEntity> data = authViewModel.getData();
-                    data.observe(AuthorizationActivity.this, new Observer<AuthEntity>() {
-                        @Override
-                        public void onChanged(AuthEntity authEntity) {
-                            Toast.makeText(AuthorizationActivity.this, "Access token changed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-                    LiveData<Boolean> firstStarted = authViewModel.getFirstStarted();
-                    firstStarted.observe(AuthorizationActivity.this, new Observer<Boolean>() {
-                        @Override
-                        public void onChanged(Boolean aBoolean) {
-                            if (aBoolean){
-                                Intent intent = new Intent(AuthorizationActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    });
-
-
-                } else {
-                    username.setError(getResources().getString(R.string.error_message));
-                }
-            }
-        });
     }
-
-
 
     private void bindViews() {
         username = findViewById(R.id.username_et);
         password = findViewById(R.id.password_et);
-        enter_btn = findViewById(R.id.enter_button);
+        enterButton = findViewById(R.id.enter_button);
         settingsButton = findViewById(R.id.settings_auth);
     }
 }

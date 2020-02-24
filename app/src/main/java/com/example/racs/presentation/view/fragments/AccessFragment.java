@@ -1,6 +1,5 @@
 package com.example.racs.presentation.view.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,17 +12,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.racs.App;
 import com.example.racs.R;
-import com.example.racs.data.api.App;
-import com.example.racs.data.entities.AccessEntity;
-import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.presentation.view.activities.AddAccessActivity;
-import com.example.racs.presentation.view.activities.OnBackClickListener;
+import com.example.racs.model.data.AccessEntityData;
+import com.example.racs.model.data.LocksEntityData;
+import com.example.racs.model.data.UsersEntityData;
+import com.example.racs.presentation.view.activities.OnCloseFragmentManager;
+import com.example.racs.presentation.view.activities.OnOpenFragmentManager;
 import com.example.racs.presentation.view.adapters.AccessAdapter;
 import com.example.racs.presentation.viewmodel.AccessViewModel;
 import com.example.racs.presentation.viewmodel.LocksViewModel;
@@ -34,20 +33,25 @@ import java.util.List;
 public class AccessFragment extends Fragment {
 
     private static final int DEFAULT_NUMBER = 100;
+
     private static RecyclerView accessRecycler;
     private static AccessAdapter accessAdapter;
-    private static List<AccessEntity.AccPOJO> accesses;
+    private static List<AccessEntityData.Access> accesses;
     private static boolean isAdded = false;
-    private Button add_btn;
+    private Button addButton;
     private ImageView back;
-    private OnBackClickListener onBackClickListener;
-    private static List<LocksEntity.Lock> lockList;
-    private static List<UsersEntity.User> usersList;
-    private OnCompleteListener<Boolean> onCompleteListener;
+    private LiveData<List<UsersEntityData.User>> usersData;
+    private OnCloseFragmentManager onCloseFragmentManager;
+    private static List<LocksEntityData.Lock> lockList;
+    private static List<UsersEntityData.User> usersList;
+    private AccessViewModel accessViewModel;
+    private UsersViewModel usersViewModel;
+    private LocksViewModel locksViewModel;
+    private LiveData<List<AccessEntityData.Access>> accessesLiveData;
+    private OnOpenFragmentManager onOpenFragmentManager;
     private AccessAdapter.OnDeleteListener onDeleteListener = new AccessAdapter.OnDeleteListener() {
         @Override
         public void onDelete(int position) {
-            AccessViewModel accessViewModel = App.getAccessViewModel();
             accessViewModel.deleteAccess(position);
         }
     };
@@ -65,7 +69,7 @@ public class AccessFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.activity_access, container, false);
-        add_btn = root.findViewById(R.id.button2);
+        addButton = root.findViewById(R.id.button2);
         back = root.findViewById(R.id.back);
         accessRecycler = root.findViewById(R.id.access_list);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), RecyclerView.VERTICAL);
@@ -77,107 +81,94 @@ public class AccessFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        onBackClickListener = (OnBackClickListener) getActivity();
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackClickListener.onBackClick();
-            }
-        });
+        onOpenFragmentManager = (OnOpenFragmentManager) getActivity();
+        onCloseFragmentManager = (OnCloseFragmentManager) getActivity();
 
-        onCompleteListener = new OnCompleteListener<Boolean>() {
-            @Override
-            public void onComplete(Boolean smt) {
-                accessAdapter = new AccessAdapter(lockList, usersList, onDeleteListener);
-                accessRecycler.setAdapter(accessAdapter);
-                accessAdapter.replaceAccesses(accesses);
-            }
-        };
+        back.setOnClickListener(v -> onCloseFragmentManager.onClose());
+
+        accessViewModel = ViewModelProviders.of(getActivity(), App.getAccessModelFactory())
+                .get(AccessViewModel.class);
+
 
         observeLocks();
         observeUsers();
         observeAccesses();
-        accessAdapter = new AccessAdapter(lockList, usersList, onDeleteListener);
-        accessRecycler.setAdapter(accessAdapter);
-        accessAdapter.replaceAccesses(accesses);
+
 
         updateLocks();
         updateUsers();
         updateAccesses();
 
+        //initScrollListener();
 
-
-        add_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), AddAccessActivity.class);
-                startActivityForResult(intent, 1);
-            }
-        });
+        addButton.setOnClickListener(view -> onOpenFragmentManager.onAddAccessFragmentOpen());
     }
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            return;
-        }
-        isAdded = data.getBooleanExtra(AddAccessActivity.ADDED, isAdded);
-        observeAccesses();
-
-    }
 
     private void observeAccesses() {
-        AccessViewModel accessViewModel = App.getAccessViewModel();
-        LiveData<List<AccessEntity.AccPOJO>> data = accessViewModel.getData();
-        accesses = data.getValue();
-        data.observe(this, new Observer<List<AccessEntity.AccPOJO>>() {
-            @Override
-            public void onChanged(List<AccessEntity.AccPOJO> accPOJOS) {
-                accesses = accPOJOS;
-            }
+        accessesLiveData = accessViewModel.getData();
+        accesses = accessesLiveData.getValue();
+        if (accessAdapter != null) {
+            accessAdapter.replaceAccesses(accesses);
+        }
+        accessesLiveData.observe(this, accesses -> {
+            AccessFragment.accesses = accesses;
+            accessAdapter = new AccessAdapter(lockList, usersList, onDeleteListener);
+            accessRecycler.setAdapter(accessAdapter);
+            accessAdapter.replaceAccesses(AccessFragment.accesses);
         });
     }
 
-    private void observeUsers(){
-        UsersViewModel usersViewModel = App.getUsersViewModel();
-        LiveData<List<UsersEntity.User>> usersData = usersViewModel.getData(DEFAULT_NUMBER);
+    private void observeUsers() {
+        usersViewModel = ViewModelProviders.of(getActivity(), App.getUsersModelFactory())
+                .get(UsersViewModel.class);
+        usersData = usersViewModel.getData();
         usersList = usersData.getValue();
-        usersData.observe(this, new Observer<List<UsersEntity.User>>() {
-            @Override
-            public void onChanged(List<UsersEntity.User> users) {
-                usersList = users;
-            }
-        });
+        usersData.observe(this, users -> usersList = users);
     }
 
-    private void observeLocks(){
-        LocksViewModel locksViewModel = App.getLocksViewModel();
-        LiveData<List<LocksEntity.Lock>> locksData = locksViewModel.getData();
+    private void observeLocks() {
+        locksViewModel = ViewModelProviders.of(getActivity(), App.getLocksModelFactory())
+                .get(LocksViewModel.class);
+        LiveData<List<LocksEntityData.Lock>> locksData = locksViewModel.getData();
         lockList = locksData.getValue();
-        locksData.observe(this, new Observer<List<LocksEntity.Lock>>() {
-            @Override
-            public void onChanged(List<LocksEntity.Lock> locks) {
-                lockList = locks;
-            }
-        });
+        locksData.observe(this, locks -> lockList = locks);
     }
 
-    private void updateAccesses(){
-        AccessViewModel accessViewModel = App.getAccessViewModel();
-        accessViewModel.loadData();
-        onCompleteListener.onComplete(true);
+    private void updateAccesses() {
+        accessViewModel.loadData(DEFAULT_NUMBER);
+
     }
 
     private void updateUsers() {
-        UsersViewModel usersViewModel = App.getUsersViewModel();
-        usersViewModel.loadData(DEFAULT_NUMBER);
+        usersViewModel.loadData(usersViewModel.getPagesCount() * 100);
     }
 
     private void updateLocks() {
-        LocksViewModel locksViewModel = App.getLocksViewModel();
         locksViewModel.loadData();
     }
+
+   /* private void initScrollListener(){
+        RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int visibleItemCount = layoutManager.getChildCount();//смотрим сколько элементов на экране
+                int totalItemCount = layoutManager.getItemCount();//сколько всего элементов
+                int firstVisibleItems = layoutManager.findFirstVisibleItemPosition();//какая позиция первого элемента
+
+                if (!accessViewModel.isLoading() && !accessViewModel.isOnStop()) {//проверяем, грузим мы что-то или нет, эта переменная должна быть вне класса  OnScrollListener
+                    if ( (visibleItemCount+firstVisibleItems) > totalItemCount - 50) {
+                        Log.i("Сколько вызываем", "= " + (accessesLiveData.getValue().size() + DEFAULT_NUMBER));
+                        usersViewModel.loadData(accessesLiveData.getValue().size() + DEFAULT_NUMBER);
+                    }
+
+                }
+            }
+        };
+        accessRecycler.addOnScrollListener(scrollListener);
+    }*/
 
 }

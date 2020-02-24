@@ -1,36 +1,26 @@
 package com.example.racs.data.repository;
 
-import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.data.repository.datasource.DataSource;
-import com.example.racs.data.repository.datasource.DataSourceFactory;
-import com.example.racs.data.repository.datasource.OnReceiveDataListener;
-import com.example.racs.domain.usecases.OnCompleteListener;
+import com.example.racs.data.api.LockApi;
+import com.example.racs.model.data.LocksEntityData;
 
-import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public class LocksRepository implements ILocksRepository {
 
-    private DataSource dataSource = DataSourceFactory.getDataSource();
+    private LockApi lockApi;
 
-    @Override
-    public void getLocks(String token, int count, final OnCompleteListener<List<LocksEntity.Lock>> onCompleteListener) {
-        OnReceiveDataListener<List<LocksEntity.Lock>> onReceiveDataListener = new OnReceiveDataListener<List<LocksEntity.Lock>>() {
-            @Override
-            public void onReceive(List<LocksEntity.Lock> obj) {
-                onCompleteListener.onComplete(obj);
-            }
-        };
-        dataSource.locksList(token, count, onReceiveDataListener);
+    public LocksRepository(LockApi lockApi) {
+        this.lockApi = lockApi;
     }
 
     @Override
-    public void deleteLock(String token, int id, final OnCompleteListener<Boolean> onCompleteListener) {
-        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
-            @Override
-            public void onReceive(Boolean obj) {
-                onCompleteListener.onComplete(obj);
-            }
-        };
-        dataSource.deleteLock(token, id, onReceiveDataListener);
+    public Single<LocksEntityData> getLocks(String token, int count) {
+        return lockApi.getLocks(token, count);
+    }
+
+    @Override
+    public Completable deleteLock(String token, int id) {
+        return lockApi.deleteLock(token, id);
     }
 }

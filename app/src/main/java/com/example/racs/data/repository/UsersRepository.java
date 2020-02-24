@@ -1,48 +1,35 @@
 package com.example.racs.data.repository;
 
-import com.example.racs.data.entities.UserPostEntity;
-import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.data.repository.datasource.DataSource;
-import com.example.racs.data.repository.datasource.DataSourceFactory;
-import com.example.racs.data.repository.datasource.OnReceiveDataListener;
-import com.example.racs.domain.usecases.OnCompleteListener;
+import com.example.racs.data.api.UserApi;
+import com.example.racs.data.api.UserImpl;
+import com.example.racs.model.data.UserPostEntityData;
+import com.example.racs.model.data.UsersEntityData;
 
-import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 
 public class UsersRepository implements IUsersReposytory {
 
-    private DataSource dataSource = DataSourceFactory.getDataSource();
+    private UserApi userApi;
+    private UserImpl userImpl;
 
-    @Override
-    public void getUsers(String token, int count, final OnCompleteListener<List<UsersEntity.User>> dataListener) {
-        OnReceiveDataListener<List<UsersEntity.User>> onReceiveDataListener = new OnReceiveDataListener<List<UsersEntity.User>>() {
-            @Override
-            public void onReceive(List<UsersEntity.User> obj) {
-                dataListener.onComplete(obj);
-            }
-        };
-        dataSource.usersList(token, count, onReceiveDataListener);
+    public UsersRepository(UserApi userApi, UserImpl userImpl) {
+        this.userApi = userApi;
+        this.userImpl = userImpl;
     }
 
     @Override
-    public void addUser(String token, UserPostEntity body, final OnCompleteListener<Boolean> onCompleteListener) {
-        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
-            @Override
-            public void onReceive(Boolean obj) {
-                onCompleteListener.onComplete(obj);
-            }
-        };
-        dataSource.addUser(token, body, onReceiveDataListener);
+    public Observable<UsersEntityData> getUsers(String token, int count) {
+        return userImpl.getUsers(token, count);
     }
 
     @Override
-    public void deleteUser(String token, int id, final OnCompleteListener<Boolean> onCompleteListener) {
-        OnReceiveDataListener<Boolean> onReceiveDataListener = new OnReceiveDataListener<Boolean>() {
-            @Override
-            public void onReceive(Boolean obj) {
-                onCompleteListener.onComplete(obj);
-            }
-        };
-        dataSource.deleteUser(token, id, onReceiveDataListener);
+    public Completable addUser(String token, UserPostEntityData body) {
+        return userApi.addUser(token, body);
+    }
+
+    @Override
+    public Completable deleteUser(String token, int id) {
+        return userApi.deleteUser(token, id);
     }
 }

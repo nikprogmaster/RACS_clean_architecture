@@ -11,15 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
-import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.presentation.view.fragments.LocksFragment;
+import com.example.racs.model.data.LocksEntityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> {
 
-    private final List<LocksEntity.Lock> locks_list = new ArrayList<>();
+    private final List<LocksEntityData.Lock> locks_list = new ArrayList<>();
     private boolean withoutDeleting;
     private OnLockClickListener onLockClickListener;
     private OnDeleteClickListener onDeleteClickListener;
@@ -29,7 +28,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
         this.onLockClickListener = onLockClickListener;
     }
 
-    public LocksAdapter(OnLockClickListener onLockClickListener, OnDeleteClickListener onDeleteClickListener, boolean withoutDeleting){
+    public LocksAdapter(OnLockClickListener onLockClickListener, OnDeleteClickListener onDeleteClickListener, boolean withoutDeleting) {
         this.withoutDeleting = withoutDeleting;
         this.onLockClickListener = onLockClickListener;
         this.onDeleteClickListener = onDeleteClickListener;
@@ -51,7 +50,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        LocksEntity.Lock lock = locks_list.get(position);
+        LocksEntityData.Lock lock = locks_list.get(position);
         if (withoutDeleting) {
             holder.bindViews(lock);
         } else {
@@ -65,7 +64,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
         return locks_list.size();
     }
 
-    public void replaceLocks(List<LocksEntity.Lock> u) {
+    public void replaceLocks(List<LocksEntityData.Lock> u) {
         this.locks_list.clear();
         this.locks_list.addAll(u);
         notifyDataSetChanged();
@@ -83,14 +82,14 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LocksEntity.Lock lock = locks_list.get(getLayoutPosition());
+                    LocksEntityData.Lock lock = locks_list.get(getLayoutPosition());
                     onLockClickListener.onLockClick(lock);
                 }
             });
 
         }
 
-        public void bindAllViews(final LocksEntity.Lock lock) {
+        public void bindAllViews(final LocksEntityData.Lock lock) {
             id = itemView.findViewById(R.id.tw_id);
             description = itemView.findViewById(R.id.tw_descr);
             version = itemView.findViewById(R.id.tw_ver);
@@ -107,7 +106,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
             });
         }
 
-        public void bindViews(LocksEntity.Lock lock) {
+        public void bindViews(LocksEntityData.Lock lock) {
             id = itemView.findViewById(R.id.t2);
             description = itemView.findViewById(R.id.t3);
             version = itemView.findViewById(R.id.t4);
@@ -118,7 +117,7 @@ public class LocksAdapter extends RecyclerView.Adapter<LocksAdapter.ViewHolder> 
     }
 
     public interface OnLockClickListener {
-        void onLockClick(LocksEntity.Lock lock);
+        void onLockClick(LocksEntityData.Lock lock);
     }
 
     public interface OnDeleteClickListener {

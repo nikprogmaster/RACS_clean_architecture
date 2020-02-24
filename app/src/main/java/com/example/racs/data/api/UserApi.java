@@ -1,10 +1,10 @@
 package com.example.racs.data.api;
 
-import com.example.racs.data.entities.UserPostEntity;
-import com.example.racs.data.entities.UsersEntity;
+import com.example.racs.model.data.UserPostEntityData;
+import com.example.racs.model.data.UsersEntityData;
 
-import retrofit2.Call;
-import retrofit2.Response;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -16,11 +16,11 @@ import retrofit2.http.Query;
 public interface UserApi {
 
     @GET("users/")
-    Call<UsersEntity> getUsers(@Header("Authorization") String token, @Query("page") int page, @Query("count") int count);
+    Observable<UsersEntityData> getUsers(@Header("Authorization") String token, @Query("page") int page, @Query("count") int count);
 
     @POST("users/")
-    Call<UsersEntity> addUser(@Header("Authorization") String token, @Body UserPostEntity body);
+    Completable addUser(@Header("Authorization") String token, @Body UserPostEntityData body);
 
     @DELETE("users/{id}/")
-    Call<Response<Void>> deleteUser(@Header("Authorization") String token, @Path("id") int id);
+    Completable deleteUser(@Header("Authorization") String token, @Path("id") int id);
 }

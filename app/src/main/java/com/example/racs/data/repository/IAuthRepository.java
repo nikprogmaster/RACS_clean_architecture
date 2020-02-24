@@ -1,10 +1,16 @@
 package com.example.racs.data.repository;
 
-import com.example.racs.data.entities.AuthEntity;
-import com.example.racs.data.entities.AuthPostEntity;
+import com.example.racs.model.data.AuthEntityData;
+import com.example.racs.model.data.AuthPostEntityData;
+import com.example.racs.model.data.RefreshEntityData;
+
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface IAuthRepository {
 
-    AuthEntity getTokens(AuthPostEntity body);
+    Single<AuthEntityData> getTokens(AuthPostEntityData body);
+
+    Observable<AuthEntityData> refreshTokens(RefreshEntityData body);
 
 }

@@ -1,9 +1,10 @@
 package com.example.racs.data.api;
 
-import com.example.racs.data.entities.AccessEntity;
-import com.example.racs.data.entities.AccessPostEntity;
+import com.example.racs.model.data.AccessEntityData;
+import com.example.racs.model.data.AccessPostEntityData;
 
-import retrofit2.Call;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -15,11 +16,11 @@ import retrofit2.http.Query;
 public interface AccessApi {
 
     @GET("accesses/")
-    Call<AccessEntity> getAccesses(@Header("Authorization") String token, @Query("count") int count);
+    Single<AccessEntityData> getAccesses(@Header("Authorization") String token, @Query("count") int count);
 
     @POST("accesses/")
-    Call<AccessEntity> postAccess(@Header("Authorization") String token, @Body AccessPostEntity body);
+    Completable postAccess(@Header("Authorization") String token, @Body AccessPostEntityData body);
 
     @DELETE("accesses/{id}/")
-    Call<Void> deleteAccess(@Header("Authorization") String token, @Path("id") int id);
+    Completable deleteAccess(@Header("Authorization") String token, @Path("id") int id);
 }

@@ -1,95 +1,155 @@
 package com.example.racs.presentation.viewmodel;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.racs.data.api.App;
-import com.example.racs.data.entities.UserPostEntity;
-import com.example.racs.data.entities.UsersEntity;
+import com.example.racs.App;
+import com.example.racs.model.data.UserPostEntityData;
+import com.example.racs.model.data.UsersEntityData;
 import com.example.racs.data.repository.UsersRepository;
-import com.example.racs.domain.usecases.OnCompleteListener;
-import com.example.racs.domain.usecases.addusecases.AddUser;
-import com.example.racs.domain.usecases.deleteusecases.DeleteUser;
-import com.example.racs.domain.usecases.getusecases.GetUsers;
+import com.example.racs.domain.usecases.addusecases.AddUserInteractor;
+import com.example.racs.domain.usecases.deleteusecases.DeleteUserInteractor;
+import com.example.racs.domain.usecases.getusecases.GetUsersInteractor;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static android.app.Activity.RESULT_OK;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class UsersViewModel extends ViewModel {
 
-    private MutableLiveData<List<UsersEntity.User>> usersData;
-    private UsersRepository usersRepository = new UsersRepository();
-    private GetUsers usecaseGetUsers;
-    private DeleteUser usecaseDeleteUser;
-    private AddUser usecaseAddUser;
-    private SharedPreferences settings;
     private static final String ACCESS_TOKEN = "ACCESS";
+    private static final int RETRY_COUNT = 5;
     private static final int DEFAULT_NUMBER = 100;
-    private OnCompleteListener<List<UsersEntity.User>> onCompleteListener;
-    public static final String ADDED_NEW_VALUE = "ADDED NEW VALUE";
+
+    private MutableLiveData<List<UsersEntityData.User>> usersData;
+    private UsersRepository usersRepository;
+    private GetUsersInteractor getUsersInteractor;
+    private DeleteUserInteractor deleteUserInteractor;
+    private AddUserInteractor addUserInteractor;
+    private SharedPreferences settings;
     private boolean isLoading = false;
     private boolean added;
     private boolean deleted;
-    private OnStopLoadingListener onStopLoadingListener;
+    private int reguestedSize;
+    private boolean onStop = false;
+    private int pagesCount = 1;
+    private List<UsersEntityData.User> list = new ArrayList<>();
 
-    public void setOnStopLoadingListener(OnStopLoadingListener onStopLoadingListener) {
-        this.onStopLoadingListener = onStopLoadingListener;
+
+    public int getPagesCount() {
+        return pagesCount;
     }
+
+    public boolean isOnStop() {
+        return onStop;
+    }
+
 
     public boolean isLoading() {
         return isLoading;
     }
 
-    public LiveData<List<UsersEntity.User>> getData(int count){
-        if (usersData == null){
+    public UsersViewModel(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
+
+    public LiveData<List<UsersEntityData.User>> getData() {
+        if (usersData == null) {
             usersData = new MutableLiveData<>();
-            loadData(count);
+            loadData(DEFAULT_NUMBER);
         }
         return usersData;
     }
 
 
     public void loadData(final int count) {
-        if (usecaseGetUsers == null){
+        reguestedSize = count;
+        list = new ArrayList<>();
+        if (getUsersInteractor == null) {
             settings = App.getSettings();
-            usecaseGetUsers = new GetUsers(usersRepository, new OnCompleteListener<List<UsersEntity.User>>() {
-                @Override
-                public void onComplete(List<UsersEntity.User> smt) {
-                    if (smt != null){
-                        usersData.setValue(smt);
-                        if (smt.size() < count){
-                            onStopLoadingListener.onStop();
-                        }
-                    }
-                    isLoading = false;
-                }
-            });
+            getUsersInteractor = new GetUsersInteractor(usersRepository);
         }
-        usecaseGetUsers.getUsers(settings.getString(ACCESS_TOKEN, ""), count);
         isLoading = true;
+        getUsersInteractor.getUsers(settings.getString(ACCESS_TOKEN, ""), count)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .retryWhen(throwableObservable -> throwableObservable
+                        .zipWith(Observable.range(1, RETRY_COUNT), (BiFunction<Throwable, Integer, Observable>) (throwable, integer) -> {
+                            if (integer < RETRY_COUNT) {
+                                list = new ArrayList<>();
+                                return Observable.just(0L);
+                            } else {
+                                return Observable.error(throwable);
+                            }
+                        }).flatMap((Function<Observable, ObservableSource<?>>) observable -> observable))
+                .subscribe(new DisposableObserver<UsersEntityData>() {
+                    @Override
+                    public void onNext(UsersEntityData usersEntityData) {
+                        if (usersEntityData.getUsers() != null) {
+                            list.addAll(usersEntityData.getUsers());
+                        }
+                        Log.i("onNext", String.valueOf(System.currentTimeMillis()));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("onError", String.valueOf(System.currentTimeMillis()));
+                        e.printStackTrace();
+
+                        isLoading = false;
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                        usersData.postValue(list);
+
+                        pagesCount = list.size() % 100 == 0 ? list.size() / 100 : list.size() / 100 + 1;
+                        Log.i("getUsers().size()", "= " + list.size());
+                        Log.i("onComp", "=" + reguestedSize);
+                        if (list.size() < reguestedSize) {
+                            Log.i("UserVM", "stop");
+                            onStop = true;
+                        }
+
+                        isLoading = false;
+                    }
+                });
     }
 
 
-
-    public void deleteUser(int id){
-        if (usecaseDeleteUser == null){
-            usecaseDeleteUser = new DeleteUser(usersRepository, new OnCompleteListener<Boolean>() {
-                @Override
-                public void onComplete(Boolean smt) {
-                    loadData(usersData.getValue().size());
-                    deleted = smt;
-                }
-            });
+    public void deleteUser(int id) {
+        if (deleteUserInteractor == null) {
+            deleteUserInteractor = new DeleteUserInteractor(usersRepository);
         }
-        usecaseDeleteUser.deleteUser(settings.getString(ACCESS_TOKEN, ""), id);
+        settings = App.getSettings();
+        deleteUserInteractor.deleteUser(settings.getString(ACCESS_TOKEN, ""), id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        loadData(pagesCount * 100);
+                        deleted = true;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        deleted = false;
+                    }
+                });
     }
 
 
@@ -97,24 +157,29 @@ public class UsersViewModel extends ViewModel {
         return deleted;
     }
 
-    public void addUser(UserPostEntity body, final Context context){
-
-        if (usecaseAddUser == null){
-            usecaseAddUser = new AddUser(usersRepository, new OnCompleteListener<Boolean>() {
-                @Override
-                public void onComplete(Boolean smt) {
-                    loadData(usersData.getValue().size());
-                    if (smt) {
-                        Toast.makeText(context, "Пользователь успешно добавлен!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent();
-                        intent.putExtra(ADDED_NEW_VALUE, true);
-                        ((AppCompatActivity) context).setResult(RESULT_OK, intent);
-                        ((AppCompatActivity) context).finish();
-                    }
-                }
-            });
+    public void addUser(UserPostEntityData body) {
+        if (addUserInteractor == null) {
+            addUserInteractor = new AddUserInteractor(usersRepository);
         }
-        usecaseAddUser.addUser(settings.getString(ACCESS_TOKEN, ""), body);
+        isLoading = true;
+        settings = App.getSettings();
+        addUserInteractor.addUser(settings.getString(ACCESS_TOKEN, ""), body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        loadData(usersData.getValue().size() % 100 == 0 ? usersData.getValue().size() + 1 : pagesCount * 100);
+                        isLoading = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
 
     }
+
 }
+

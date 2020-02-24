@@ -11,15 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.racs.R;
-import com.example.racs.data.entities.UsersEntity;
-import com.example.racs.presentation.view.fragments.UsersFragment;
+import com.example.racs.model.data.UsersEntityData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder> {
 
-    private final List<UsersEntity.User> users_list = new ArrayList<>();
+    private final List<UsersEntityData.User> users_list = new ArrayList<>();
     private UsersAdapterListener usersAdapterListener;
 
     public UsersAdapter(UsersAdapterListener usersAdapterListener) {
@@ -38,12 +37,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull UserHolder holder, int position) {
-        // !!!! ОЧЕНЬ ВАЖНО!!!!
-        /*if (position == users_list.size() - 35) {
-            usersAdapterListener.loadNext(users_list.size()+50);
-        }*/
         final int itemId = users_list.get(position).getUId();
-        UsersEntity.User user = users_list.get(position);
+        UsersEntityData.User user = users_list.get(position);
         holder.bindViews(user);
     }
 
@@ -58,13 +53,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder> 
         return users_list.size();
     }
 
-    public void replaceUsers(List<UsersEntity.User> u) {
+    public void replaceUsers(List<UsersEntityData.User> u) {
         this.users_list.clear();
         this.users_list.addAll(u);
         notifyDataSetChanged();
     }
 
-    class UserHolder extends RecyclerView.ViewHolder  {
+    class UserHolder extends RecyclerView.ViewHolder {
 
         TextView nsp;
         TextView c_id;
@@ -81,7 +76,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder> 
             del_btn = itemView.findViewById(R.id.del_user1);
         }
 
-        public void bindViews(UsersEntity.User user) {
+        public void bindViews(UsersEntityData.User user) {
             String NSP = user.getLastName() + " " + user.getFirstName() + " " + user.getPatronymic();
             final int uId = user.getUId();
             nsp.setText(NSP);
@@ -99,7 +94,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserHolder> 
 
     public interface UsersAdapterListener {
         void onBinClick(int id);
-        //void loadNext(int count);
     }
 
 }

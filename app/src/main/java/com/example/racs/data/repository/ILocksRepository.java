@@ -1,13 +1,13 @@
 package com.example.racs.data.repository;
 
-import com.example.racs.data.entities.LocksEntity;
-import com.example.racs.domain.usecases.OnCompleteListener;
+import com.example.racs.model.data.LocksEntityData;
 
-import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 public interface ILocksRepository {
 
-    void getLocks(String token, int count, OnCompleteListener<List<LocksEntity.Lock>> onCompleteListener);
+    Single<LocksEntityData> getLocks(String token, int count);
 
-    void deleteLock(String token, int id, OnCompleteListener<Boolean> onCompleteListener);
+    Completable deleteLock(String token, int id);
 }
